@@ -1,0 +1,202 @@
+# -------------------------------------------------------------------------- #
+#
+# Copyright (C) 1991-2014 Altera Corporation. All rights reserved.
+# Your use of Altera Corporation's design tools, logic functions 
+# and other software and tools, and its AMPP partner logic 
+# functions, and any output files from any of the foregoing 
+# (including device programming or simulation files), and any 
+# associated documentation or information are expressly subject 
+# to the terms and conditions of the Altera Program License 
+# Subscription Agreement, the Altera Quartus II License Agreement,
+# the Altera MegaCore Function License Agreement, or other 
+# applicable license agreement, including, without limitation, 
+# that your use is for the sole purpose of programming logic 
+# devices manufactured by Altera and sold by Altera or its 
+# authorized distributors.  Please refer to the applicable 
+# agreement for further details.
+#
+# -------------------------------------------------------------------------- #
+#
+# Quartus II 64-Bit
+# Version 14.0.2 Build 209 09/17/2014 SJ Web Edition
+# Date created = 18:53:12  March 12, 2015
+#
+# -------------------------------------------------------------------------- #
+#
+# Notes:
+#
+# 1) The default values for assignments are stored in the file:
+#		Practica1_assignment_defaults.qdf
+#    If this file doesn't exist, see file:
+#		assignment_defaults.qdf
+#
+# 2) Altera recommends that you do not modify this file. This
+#    file is updated automatically by the Quartus II software
+#    and any changes you make may be lost or overwritten.
+#
+# -------------------------------------------------------------------------- #
+
+
+set_global_assignment -name FAMILY "MAX 10"
+set_global_assignment -name DEVICE 10M08SAE144C8G
+set_global_assignment -name TOP_LEVEL_ENTITY CQ_MAX10_TOP
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION 15.1.0
+set_global_assignment -name PROJECT_CREATION_TIME_DATE "09:30:00 MAY  27, 2015"
+set_global_assignment -name LAST_QUARTUS_VERSION "18.1.0 Lite Edition"
+set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
+set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 256
+set_global_assignment -name EDA_SIMULATION_TOOL "ModelSim-Altera (Verilog)"
+set_global_assignment -name EDA_OUTPUT_DATA_FORMAT "VERILOG HDL" -section_id eda_simulation
+set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVTTL"
+set_global_assignment -name ENABLE_SIGNALTAP OFF
+set_global_assignment -name DEVICE_FILTER_PACKAGE EQFP
+set_global_assignment -name DEVICE_FILTER_PIN_COUNT 144
+set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
+set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+set_global_assignment -name FLOW_ENABLE_POWER_ANALYZER ON
+set_global_assignment -name POWER_DEFAULT_INPUT_IO_TOGGLE_RATE "12.5 %"
+
+
+
+#SYS
+set_location_assignment PIN_27 -to CK48M_i
+set_location_assignment PIN_123 -to XPSW_i
+set_location_assignment PIN_120 -to XLED_R_o
+set_location_assignment PIN_122 -to XLED_G_o
+set_location_assignment PIN_121 -to XLED_B_o
+
+# CN1
+set_location_assignment PIN_62 -to P62
+set_location_assignment PIN_61 -to P61
+set_location_assignment PIN_60 -to P60
+set_location_assignment PIN_59 -to P59
+set_location_assignment PIN_58 -to P58
+set_location_assignment PIN_57 -to P57
+set_location_assignment PIN_56 -to P56
+set_location_assignment PIN_55 -to P55
+set_location_assignment PIN_52 -to P52
+set_location_assignment PIN_50 -to P50
+set_location_assignment PIN_48 -to P48
+set_location_assignment PIN_47 -to P47
+set_location_assignment PIN_46 -to P46
+set_location_assignment PIN_45 -to P45
+set_location_assignment PIN_44 -to P44
+set_location_assignment PIN_43 -to P43
+set_location_assignment PIN_41 -to P41
+set_location_assignment PIN_39 -to P39
+set_location_assignment PIN_38 -to P38
+                            
+# CN2                       
+set_location_assignment PIN_124 -to P124
+set_location_assignment PIN_127 -to P127
+set_location_assignment PIN_130 -to P130
+set_location_assignment PIN_131 -to P131
+set_location_assignment PIN_132 -to P132
+set_location_assignment PIN_134 -to P134
+set_location_assignment PIN_135 -to P135
+set_location_assignment PIN_140 -to P140
+set_location_assignment PIN_141 -to P141
+#set_location_assignment PIN_3 -to P3
+set_location_assignment PIN_6 -to P6
+set_location_assignment PIN_7 -to P7
+set_location_assignment PIN_8 -to P8
+set_location_assignment PIN_10 -to P10
+set_location_assignment PIN_11 -to P11
+set_location_assignment PIN_12 -to P12
+set_location_assignment PIN_13 -to P13
+set_location_assignment PIN_14 -to P14
+set_location_assignment PIN_17 -to P17
+
+
+# Project files Assignments
+# ==========================
+set_global_assignment -name HDL_MESSAGE_LEVEL LEVEL3
+
+set_global_assignment -name ENABLE_OCT_DONE ON
+set_global_assignment -name EXTERNAL_FLASH_FALLBACK_ADDRESS 00000000
+set_global_assignment -name STRATIXV_CONFIGURATION_SCHEME "PASSIVE SERIAL"
+set_global_assignment -name USE_CONFIGURATION_DEVICE OFF
+set_global_assignment -name INTERNAL_FLASH_UPDATE_MODE "SINGLE COMP IMAGE WITH ERAM"
+set_global_assignment -name CRC_ERROR_OPEN_DRAIN OFF
+set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -rise
+set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -fall
+set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -rise
+set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -fall
+
+
+
+
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_global_assignment -name PRE_FLOW_SCRIPT_FILE "quartus_sh:./RTL/MISC/TIMESTAMP.tcl"
+
+set_location_assignment PIN_21 -to P21
+set_location_assignment PIN_22 -to P22
+set_location_assignment PIN_24 -to P24
+set_location_assignment PIN_25 -to P25
+set_location_assignment PIN_26 -to P26
+set_location_assignment PIN_28 -to P28
+set_location_assignment PIN_29 -to P29
+set_location_assignment PIN_30 -to P30
+set_location_assignment PIN_32 -to P32
+set_location_assignment PIN_33 -to P33
+set_location_assignment PIN_54 -to P54
+set_location_assignment PIN_74 -to SDRAM_DATs_io[10]
+set_location_assignment PIN_75 -to SDRAM_DATs_io[9]
+set_location_assignment PIN_76 -to SDRAM_DATs_io[8]
+set_location_assignment PIN_77 -to SDRAM_QDMH_o
+set_location_assignment PIN_78 -to SDRAM_CLK_o
+set_location_assignment PIN_79 -to SDRAM_CKE_o
+set_location_assignment PIN_80 -to SDRAM_ADRs_o[5]
+set_location_assignment PIN_81 -to SDRAM_ADRs_o[4]
+set_location_assignment PIN_84 -to SDRAM_ADRs_o[6]
+set_location_assignment PIN_85 -to SDRAM_ADRs_o[7]
+set_location_assignment PIN_86 -to SDRAM_ADRs_o[8]
+set_location_assignment PIN_87 -to SDRAM_ADRs_o[9]
+set_location_assignment PIN_88 -to SDRAM_ADRs_o[11]
+set_location_assignment PIN_89 -to SDRAM_ADRs_o[12]
+set_location_assignment PIN_90 -to SDRAM_XCAS_o
+set_location_assignment PIN_91 -to SDRAM_XRAS_o
+set_location_assignment PIN_92 -to SDRAM_XCS_o
+set_location_assignment PIN_96 -to SDRAM_BADRs_o[1]
+set_location_assignment PIN_93 -to SDRAM_BADRs_o[0]
+set_location_assignment PIN_97 -to SDRAM_ADRs_o[10]
+set_location_assignment PIN_98 -to SDRAM_ADRs_o[0]
+set_location_assignment PIN_99 -to SDRAM_ADRs_o[1]
+set_location_assignment PIN_101 -to SDRAM_ADRs_o[2]
+set_location_assignment PIN_100 -to SDRAM_ADRs_o[3]
+set_location_assignment PIN_102 -to SDRAM_XWE_o
+set_location_assignment PIN_105 -to SDRAM_QDML_o
+set_location_assignment PIN_106 -to SDRAM_DATs_io[7]
+set_location_assignment PIN_110 -to SDRAM_DATs_io[6]
+set_location_assignment PIN_111 -to SDRAM_DATs_io[5]
+set_location_assignment PIN_113 -to SDRAM_DATs_io[3]
+set_location_assignment PIN_112 -to SDRAM_DATs_io[4]
+set_location_assignment PIN_118 -to SDRAM_DATs_io[1]
+set_location_assignment PIN_119 -to SDRAM_DATs_io[0]
+set_location_assignment PIN_114 -to SDRAM_DATs_io[2]
+set_location_assignment PIN_70 -to SDRAM_DATs_io[11]
+set_location_assignment PIN_69 -to SDRAM_DATs_io[12]
+set_location_assignment PIN_66 -to SDRAM_DATs_io[13]
+set_location_assignment PIN_65 -to SDRAM_DATs_io[14]
+set_location_assignment PIN_64 -to SDRAM_DATs_io[15]
+set_location_assignment PIN_18 -to altera_reserved_tck
+set_location_assignment PIN_19 -to altera_reserved_tdi
+set_location_assignment PIN_20 -to altera_reserved_tdo
+set_location_assignment PIN_16 -to altera_reserved_tms
+set_global_assignment -name SDC_FILE constraint/CQ_MAX10_TOP.sdc
+set_global_assignment -name VERILOG_FILE RTL/CQ_MAX10_TOP.v
+set_global_assignment -name VERILOG_FILE IP/JTAG_DBGER/JTAG_DBGER/synthesis/JTAG_DBGER.v
+set_global_assignment -name QSYS_FILE IP/JTAG_DBGER/JTAG_DBGER.qsys
+set_global_assignment -name QIP_FILE IP/PLL/PLL.qip
+set_global_assignment -name SOURCE_FILE output_files/Spf1.spf
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to P57
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to P59
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to P38
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to P39
+set_instance_assignment -name IO_STANDARD "3.3 V SCHMITT TRIGGER" -to P57
+set_instance_assignment -name IO_STANDARD "3.3 V SCHMITT TRIGGER" -to P59
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

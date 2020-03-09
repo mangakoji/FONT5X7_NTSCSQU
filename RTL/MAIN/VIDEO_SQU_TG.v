@@ -14,7 +14,7 @@ module VIDEO_SQU_TG
     , `in tri0      RST_i
     , `out `w[9:0]  HCTRs_o
     , `out `w[8:0]  VCTRs_o
-    , `out `w       FCTR_o
+    , `out `w[7:0]  FCTRs_o
     , `out `w       XBLK_o
     , `out `w       COLOR_BAR_NOW_o
     , `out `w       XSYNC_o
@@ -38,7 +38,7 @@ module VIDEO_SQU_TG
 
     `r [9:0] HCTRs      ;
     `r [8:0] VCTRs      ;
-    `r       FCTR       ;
+    `r [7:0] FCTRs      ;
     `w Hcy ;
     `a Hcy = &(HCTRs |~(C_H_PX_N-1)) ;
     `w Vcy ;
@@ -48,14 +48,14 @@ module VIDEO_SQU_TG
         `b
             HCTRs <= (C_H_PX_N  -2) ;
             VCTRs <= (C_V_LINE_N -1) ;
-            FCTR  <= 1'b1 ;
+            FCTRs  <= 0 ;
         `e else `cke
         `b
             if( RST_i )
             `b
                 HCTRs <= 0 ;
                 VCTRs <= 0 ;
-                FCTR  <= 1'b0 ;
+                FCTRs  <= 0 ;
             `e else
             `b
                 if( Hcy )
@@ -64,7 +64,7 @@ module VIDEO_SQU_TG
                     if( Vcy )
                     `b
                         VCTRs <= 0 ;
-                        FCTR <= FCTR + 1 ;
+                        FCTRs <= FCTRs + 1 ;
                     `e
                     else
                         VCTRs <= VCTRs + 1 ;
@@ -74,7 +74,7 @@ module VIDEO_SQU_TG
         `e
     `a HCTRs_o  = HCTRs ;
     `a VCTRs_o  = VCTRs ;
-    `a FCTR_o  = FCTR ;
+    `a FCTRs_o  = FCTRs ;
 
     `r XBLK ;
     `r  XSYNC ;
@@ -256,7 +256,7 @@ module TB_VIDEO_SQU_TG
     `r      RST_i               ;
     `w[9:0] HCTRs_o             ;
     `w[8:0] VCTRs_o             ;
-    `w      FCTR_o              ;
+    `w[7:0] FCTRs_o              ;
     `w      XBLK_o              ;
     `w      COLOR_BAR_NOW_o     ;
     `w      XSYNC_o             ;
@@ -270,7 +270,7 @@ module TB_VIDEO_SQU_TG
             , .RST_i            ( RST_i          )
             , .HCTRs_o          ( HCTRs_o        )
             , .VCTRs_o          ( VCTRs_o        )
-            , .FCTR_o           ( FCTR_o         )
+            , .FCTRs_o          ( FCTRs_o        )
             , .XBLK_o           ( XBLK_o         )
             , .COLOR_BAR_NOW_o  ( COLOR_BAR_NOW_o)
             , .XSYNC_o          ( XSYNC_o        )
