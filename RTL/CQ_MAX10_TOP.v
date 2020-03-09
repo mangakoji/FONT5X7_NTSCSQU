@@ -6,7 +6,7 @@
 //J14g
 //  IA : ULTRA_SONIC try1
 
-`include "RTL/SUPER_SONIC_OSC.v"
+`include "MAIN/VIDEO_SQU.v"
 `default_nettype none
 module CQ_MAX10_TOP
 #(
@@ -108,7 +108,7 @@ module CQ_MAX10_TOP
             , .c0           ( CK            )
             , .locked       ( pll_locked    )
     ) ;
-    parameter C_F_CK = 100_000_000  ;//100MHz
+    parameter C_F_CK = 48_000_000 *6/7*8  ;
     always@(posedge CK or negedge pll_locked)
         if( ~ pll_locked )
             PLL_LOCKED_Ds <= 0 ;
@@ -117,32 +117,41 @@ module CQ_MAX10_TOP
     assign XARST = PLL_LOCKED_Ds[1] ;
     wire CK_i = CK ;
     wire XARST_i = XARST ;
+    `r CK_EE ;
+    `r[2:0] PCTRs ;
+    `ack
+        `xar
+            {CK_EE , PCTRs} <= 0 ;
+        else
+        `b
+            CK_EE <= & PCTRs ;
+            PCTRs <= PCTRs + 1 ;
+        `e
+    
 
 //        , .A_IN_i       ( P59       )
 //        , .B_IN_i       ( P57       )
 //    assign P58 = 1'b0 ;
 
-    wire    DSDAC_o     ;
-    wire    XDSDAC_o    ;
-    wire[7:0]   BUS_WAVE_CYCLEs_i    ;
-    wire        BUS_WAVE_IS_SAW_i   ;
-    wire[11:0]  WAVEs_o ;
-    SUPER_SONIC_OSC
-        #( 
-            .C_F_CK     (   C_F_CK  )
-        ) SUPER_SONIC_OSC
+    wire[9:0]   VIDEOs ;
+    VIDEO_SQU
+        VIDEO_SQU
         (
-              .CK_i                 ( CK_i              )
-            , .XARST_i              ( XARST_i           )
-//            , .CK_EE_i              ()
-            , .BUS_WAVE_CYCLEs_i    ( BUS_WAVE_CYCLEs_i )
-            , .BUS_WAVE_IS_SAW_i    ( BUS_WAVE_IS_SAW_i )
-            , .DSDAC_o              ( DSDAC_o           )
-            , .XDSDAC_o             ( XDSDAC_o          )
-            , .WAVEs_o              ( WAVEs_o           )
-        ) 
-    ; // SUPER_SONIC_OSC
-    
+              .CK_i     ( CK_i      )      //8*12.27272MHz
+            , .XARST_i  ( XARST_i   )
+            , .CK_EE_i  ( CK_EE     )        //12.27272MHz
+//            , .RST_i    ( )
+            , .VIDEOs_o ( VIDEOs    )
+        )
+    ;
+    `r      VIDEO ;
+    `r[10:0] VIDEO_DSs ;
+    `ack
+        `xar
+            VIDEO_DSs <= 0 ;
+        else
+            VIDEO_DSs <= {1'b0 , VIDEO_DSs[9:0]} + {1'b0,VIDEOs}; 
+    `w VIDEO_o = VIDEO_DSs[10] ;
 
     
     wire [63:0] BJO_DBGOs ;
@@ -158,14 +167,12 @@ module CQ_MAX10_TOP
         (BJ_DBGs[22]) ?
             C_TIMESTAMP
         :
-            WAVEs_o
+            0
     ;
-    assign BUS_WAVE_CYCLEs_i = BJ_DBGs[7:0] ;
-    assign BUS_WAVE_IS_SAW_i = BJ_DBGs[8] ;
 
 //    assign P41 = DAC_DONE_o ;
-    assign P43 = XDSDAC_o ;
-    assign P44 = DSDAC_o ;
+    assign P43 = VIDEO_o ;
+    assign P44 = 1'b1 ;
     assign XLED_R_o         = ~ BJ_DBGs[ 23 ] ;
     assign XLED_G_o         = ~ BJ_DBGs[ 23 ] ;
     assign XLED_B_o         = ~ BJ_DBGs[ 23 ] ;

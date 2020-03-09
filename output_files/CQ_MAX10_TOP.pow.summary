@@ -1,12 +1,12 @@
-Power Analyzer Status : Successful - Thu Feb 13 18:41:46 2020
+Power Analyzer Status : Successful - Mon Mar 09 22:33:23 2020
 Quartus Prime Version : 18.1.0 Build 625 09/12/2018 SJ Lite Edition
 Revision Name : CQ_MAX10_TOP
 Top-level Entity Name : CQ_MAX10_TOP
 Family : MAX 10
 Device : 10M08SAE144C8G
 Power Models : Final
-Total Thermal Power Dissipation : 214.94 mW
-Core Dynamic Thermal Power Dissipation : 36.82 mW
-Core Static Thermal Power Dissipation : 121.24 mW
-I/O Thermal Power Dissipation : 56.87 mW
+Total Thermal Power Dissipation : 210.48 mW
+Core Dynamic Thermal Power Dissipation : 32.94 mW
+Core Static Thermal Power Dissipation : 121.23 mW
+I/O Thermal Power Dissipation : 56.31 mW
 Power Estimation Confidence : Low: user provided insufficient toggle rate data

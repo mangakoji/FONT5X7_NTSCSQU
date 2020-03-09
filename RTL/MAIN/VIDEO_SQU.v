@@ -8,7 +8,7 @@
 `include "../MISC/define.vh"
 `include "./VIDEO_SQU_TG.v"
 `default_nettype none
-module VIDEO_SQU_TG
+module VIDEO_SQU
 (
       `in tri1      CK_i           //12.27272MHz
     , `in tri1      XARST_i
@@ -21,7 +21,7 @@ module VIDEO_SQU_TG
     `w [9:0] HCTRs      ;
     `w [8:0] VCTRs      ;
     `w [7:0] FCTRs      ;
-    `w      XBLK_AD l
+    `w      XBLK_AD     ;
     `w      COLOR_BAR_NOW   ;
     `w      XSYNC       ;
     `w[5:0]COLOR_CTRs ;
@@ -34,7 +34,7 @@ module VIDEO_SQU_TG
             , .RST_i            ( RST_i         )
             , .HCTRs_o          ( HCTRs         )
             , .VCTRs_o          ( VCTRs         )
-            , .FCTR_o           ( FCTR          )
+            , .FCTRs_o          ( FCTRs         )
             , .XBLK_o           ( XBLK_AD       )
             , .COLOR_BAR_NOW_o  ( COLOR_BAR_NOW )
             , .XSYNC_o          ( XSYNC         )
@@ -45,6 +45,7 @@ module VIDEO_SQU_TG
     `r[7:0] MV_RAMPs ;
     `ack
         `xar
+            MV_RAMPs <= 0 ;
         else `cke
             MV_RAMPs <= HCTRs[9:1] + VCTRs + FCTRs ;
     `p C_PEDE = 205 ;
@@ -60,7 +61,7 @@ module VIDEO_SQU_TG
             XBLK <= XBLK_AD ;
             if( ~ XSYNC )
                 VIDEOs <= 0 ;
-            else if( COL_BAR_NOW )
+            else if( COLOR_BAR_NOW )
                 VIDEOs <= C_PEDE ;
             else if( ~ XBLK )
                 VIDEOs <= C_PEDE ;
@@ -68,22 +69,12 @@ module VIDEO_SQU_TG
                 VIDEOs <= {MV_RAMPs,1'b0} + C_PEDE ;
         `e
     `a VIDEOs_o = VIDEOs ;
-/*
-    `r      VIDEO ;
-    `r[11:0] VIDEO_DSs ;
-    `ack
-        `xar
-            VIDEO_DSs <= 0 ;
-        else `cke
-            VIDEOs_DSs <= {1'b0 , VIDEO_DSs[9:0]} + {1'b0,VIDEOs}; 
-    `a VIDEO_o = VIDEO_DSs[11] ;
-*/
 endmodule
 //VIDEO_SQU_TG
 
 
 `timescale 1ns/1ns
-module TB_VIDEO_SQU_TG
+module TB_VIDEO_SQU
 #(
     parameter C_C=10.0
 )(
@@ -110,7 +101,7 @@ module TB_VIDEO_SQU_TG
     `r      RST_i               ;
     `w[9:0] HCTRs_o             ;
     `w[8:0] VCTRs_o             ;
-    `w      FCTR_o              ;
+    `w[7:0]FCTRs_o              ;
     `w      XBLK_o              ;
     `w      COLOR_BAR_NOW_o     ;
     `w      XSYNC_o             ;
@@ -124,7 +115,7 @@ module TB_VIDEO_SQU_TG
             , .RST_i            ( RST_i          )
             , .HCTRs_o          ( HCTRs_o        )
             , .VCTRs_o          ( VCTRs_o        )
-            , .FCTR_o           ( FCTR_o         )
+            , .FCTRs_o          ( FCTRs_o        )
             , .XBLK_o           ( XBLK_o         )
             , .COLOR_BAR_NOW_o  ( COLOR_BAR_NOW_o)
             , .XSYNC_o          ( XSYNC_o        )
