@@ -108,7 +108,8 @@ module CQ_MAX10_TOP
             , .c0           ( CK            )
             , .locked       ( pll_locked    )
     ) ;
-    parameter C_F_CK = 48_000_000 *6/7*8  ;
+//    parameter C_F_CK = 48_000_000 *6/7*8  ;
+    parameter C_F_CK = 135_000_000 ;
     always@(posedge CK or negedge pll_locked)
         if( ~ pll_locked )
             PLL_LOCKED_Ds <= 0 ;
@@ -118,14 +119,17 @@ module CQ_MAX10_TOP
     wire CK_i = CK ;
     wire XARST_i = XARST ;
     `r CK_EE ;
-    `r[2:0] PCTRs ;
+    `r[3:0] PCTRs ;
     `ack
         `xar
             {CK_EE , PCTRs} <= 0 ;
         else
         `b
-            CK_EE <= & PCTRs ;
-            PCTRs <= PCTRs + 1 ;
+            CK_EE <= & {~PCTRs} ;
+            if(PCTRs==10)
+                PCTRs <= 0 ;
+            else
+                PCTRs <= PCTRs + 1 ;
         `e
     
 
