@@ -96,7 +96,8 @@ module VIDEO_SQU_TG
     `w HSYNC_LONG_H_a ;
     `w HSYNC_H_a ;
     `a HSYNC_L_a = HCTRs==(C_H_PX_N -C_H_BACK_PORCH_N -C_PX_DLY -1) ;
-    `a HSYNC_LONG_H_a = HCTRs==(C_H_PX_N/2 -C_H_BACK_PORCH_N -C_PX_DLY -1) ;
+//    `a HSYNC_LONG_H_a = HCTRs==(C_H_PX_N/2 -C_H_BACK_PORCH_N -C_PX_DLY -1) ;
+    `a HSYNC_LONG_H_a = HCTRs==(C_H_PX_N-2*C_H_BACK_PORCH_N -C_PX_DLY -1) ;
     `a HSYNC_H_a = 
         (   HCTRs == 
             (
