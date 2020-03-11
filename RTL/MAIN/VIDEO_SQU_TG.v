@@ -7,7 +7,11 @@
 `include "../MISC/define.vh"
 `default_nettype none
 module VIDEO_SQU_TG
-(
+#(
+      `p C_PX_DLY           = 2
+    , `p C_CBURST_DLY_N     = 2
+    , `p C_XCBURST_SHUF     = 1'b0 
+)(
       `in tri1      CK_i           //12.27272MHz
     , `in tri1      XARST_i
     , `in tri1      CK_EE_i        //12.27272MHz
@@ -18,14 +22,14 @@ module VIDEO_SQU_TG
     , `out `w       XBLK_o
     , `out `w       COLOR_BAR_NOW_o
     , `out `w       XSYNC_o
-    , `out `w[4:0]  COLOR_CTRs_o 
-
+    , `out `w[1:0]  CPHs_o
+    , `out `w[2:0]  CCTRs_o 
+    , `out `w[3:0]  sin_s_o //1 start
+    , `out `w[3:0]  cos_s_o //6 start
 );
-    `p C_PX_DLY               = 2         ;
     `p C_H_PX_N                 = 780       ;
     `p C_H_ACT_PX_N             = 640       ;
     `p C_H_SYNC_N               = 58        ;//4.7us
-    `p C_H_COLOR_BAR_DLY_N      = 2         ;
     `p C_H_FRONT_COLOR_BAR_N    = 64        ;//19sccycle
     `p C_H_COLOR_BAR_N          = 31        ;//9cycle
     `p C_H_BACK_PORCH_N        = 121       ;//9.4us+6ck from sync ne
@@ -155,7 +159,7 @@ module VIDEO_SQU_TG
                     - C_H_BACK_PORCH_N
                     + C_H_FRONT_COLOR_BAR_N
                     + C_H_COLOR_BAR_N
-                    - C_H_COLOR_BAR_DLY_N
+                    - C_CBURST_DLY_N
                     - 1
                 )
             )
@@ -170,61 +174,68 @@ module VIDEO_SQU_TG
                       C_H_PX_N
                     - C_H_BACK_PORCH_N
                     + C_H_FRONT_COLOR_BAR_N
-                    - C_H_COLOR_BAR_DLY_N
+                    - C_CBURST_DLY_N
                     - 1
                 )
             )
                 COLOR_BAR_NOW <= 1'b1 ;
     `a XSYNC_o = XSYNC ;
     `a COLOR_BAR_NOW_o = COLOR_BAR_NOW ;
+
+
     //24clock -> 7fsc
-    `r[4:0]COLOR_CTRs ;
-    `w COLOR_CTR_cy ;
-    `a COLOR_CTR_cy = &(COLOR_CTRs[2:0] | (~(6-1))) ;
+    `r[2:0]CCTRs ;
+    `r[1:0]CPHs ;
+    `w Ccy ;
+    `a Ccy = CCTRs == 6 ;
     `ack
         `xar
-        `b
-            COLOR_CTRs <= 1'b1 ;
-        `e else `cke
+            {CPHs,CCTRs} <= 1 ;
+        else `cke
         `b
             if( RST_i )
-                COLOR_CTRs <= 1 ;
+                {CPHs,CCTRs} <= 1 ;
+            else if( ~C_XCBURST_SHUF & HSYNC_LONG_H_a & VSYNC_L_fast_a)
+                CPHs <= FCTRs[1:0]  ;
             else
-                if( COLOR_CTR_cy)
-                    COLOR_CTRs <= {COLOR_CTRs[4:3]+1, 3'd1} ;
+            `b
+                if( Ccy )
+                    CCTRs <= 1  ;
                 else
-                    COLOR_CTRs <= COLOR_CTRs + 1 ;
-//            case(COLOR_CTRs)
-//                4'b00_000 : COLOR_CTRs <= 
-/*            case( COLOR_CTRs )
-                 0 : {CQs,CIs} <= {,} ;
-                 1 : {CQs,CIs} <= {,} ;
-                 2 : {CQs,CIs} <= {,} ;
-                3 :  {CQs,CIs} <= {,} ;
-                4 :  {CQs,CIs} <= {,} ;
-                5 :  {CQs,CIs} <= {,} ;
-                6 :  {CQs,CIs} <= {,} ;
-                7 :  {CQs,CIs} <= {,} ;
-                8 :  {CQs,CIs} <= {,} ;
-                9 :  {CQs,CIs} <= {,} ;
-               10 :  {CQs,CIs} <= {,} ;
-               11 :  {CQs,CIs} <= {,} ;
-               12 :  {CQs,CIs} <= {,} ;
-               13 :  {CQs,CIs} <= {,} ;
-               14 :  {CQs,CIs} <= {,} ;
-               15 :  {CQs,CIs} <= {,} ;
-               16 :  {CQs,CIs} <= {,} ;
-               17 :  {CQs,CIs} <= {,} ;
-               18 :  {CQs,CIs} <= {,} ;
-               19 :  {CQs,CIs} <= {,} ;
-               20 :  {CQs,CIs} <= {,} ;
-               21 :  {CQs,CIs} <= {,} ;
-               22 :  {CQs,CIs} <= {,} ;
-               23 :  {CQs,CIs} <= {,} ;
-                default :
-            endcase
-*/        `e
-    `a COLOR_CTRs_o = COLOR_CTRs ;
+                    CCTRs <= CCTRs + 1 ;
+                case( {CPHs,CCTRs} )
+                    5'b00_001 : CPHs <= 2'b01 ;
+                    5'b01_010 : CPHs <= 2'b11 ;
+                    5'b11_011 : CPHs <= 2'b10 ;
+                    5'b10_100 : CPHs <= 2'b00 ;
+                    5'b00_101 : CPHs <= 2'b01 ;
+                    5'b01_110 : CPHs <= 2'b10 ;
+                    5'b10_001 : CPHs <= 2'b00 ;
+                    5'b00_010 : CPHs <= 2'b01 ;
+                    5'b01_011 : CPHs <= 2'b11 ;
+                    5'b11_100 : CPHs <= 2'b10 ;
+                    5'b10_101 : CPHs <= 2'b00 ;
+                    5'b00_110 : CPHs <= 2'b11 ;
+                    5'b11_001 : CPHs <= 2'b10 ;
+                    5'b10_010 : CPHs <= 2'b00 ;
+                    5'b00_011 : CPHs <= 2'b01 ;
+                    5'b01_100 : CPHs <= 2'b11 ;
+                    5'b11_101 : CPHs <= 2'b10 ;
+                    5'b10_110 : CPHs <= 2'b01 ;
+                    5'b01_001 : CPHs <= 2'b11 ;
+                    5'b11_010 : CPHs <= 2'b10 ;
+                    5'b10_011 : CPHs <= 2'b00 ;
+                    5'b00_100 : CPHs <= 2'b01 ;
+                    5'b01_101 : CPHs <= 2'b11 ;
+                    5'b11_110 : CPHs <= 2'b00 ;
+                    default : CPHs <= 2'b00 ;
+                endcase
+            `e
+        `e
+    `a CPHs_o = CPHs ;
+    `a CCTRs_o = CCTRs ;
+    `a sin_s_o = {CPHs[1],{3{CPHs[0]}}^CCTRs} ;
+    `a cos_s_o = {CPHs[0],{3{CPHs[1]}}^CCTRs} ;
 endmodule
 //VIDEO_SQU_TG
 
@@ -262,6 +273,10 @@ module TB_VIDEO_SQU_TG
     `w      COLOR_BAR_NOW_o     ;
     `w      XSYNC_o             ;
     `w[4:0] COLOR_CTRs_o        ;
+    `w[1:0]  CPHs_o             ;
+    `w[2:0]  CCTRs_o            ;
+    `w[3:0]  sin_s_o            ;//1 start
+    `w[3:0]  cos_s_o            ;//6 start
     VIDEO_SQU_TG
         VIDEO_SQU_TG
         (
@@ -275,7 +290,10 @@ module TB_VIDEO_SQU_TG
             , .XBLK_o           ( XBLK_o         )
             , .COLOR_BAR_NOW_o  ( COLOR_BAR_NOW_o)
             , .XSYNC_o          ( XSYNC_o        )
-            , .COLOR_CTRs_o     ( COLOR_CTRs_o   )
+            , .CPHs_o           ( CPHs_o        )
+            , .CCTRs_o          ( CCTRs_o       )
+            , .sin_s_o          ( sin_s_o       )
+            , .cos_s_o          ( cos_s_o       )
         )
     ;
 
