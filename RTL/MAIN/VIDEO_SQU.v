@@ -72,13 +72,13 @@ module VIDEO_SQU
             else 
                 case( HCTRs[8:6] )
                     0 : COLORs <=   `Ds( cos_s )                 ;
-                    1 : COLORs <=   `Ds( cos_s ) + `Ds( sin_s )  ;
-                    2 : COLORs <=                  `Ds( sin_s )  ;
-                    3 : COLORs <= - `Ds( cos_s ) + `Ds( sin_s )  ;
+                    1 : COLORs <=   `Ds( cos_s ) - `Ds( sin_s )  ;
+                    2 : COLORs <=                - `Ds( sin_s )  ;
+                    3 : COLORs <= - `Ds( cos_s ) - `Ds( sin_s )  ;
                     4 : COLORs <= - `Ds( cos_s )                 ;
-                    5 : COLORs <= - `Ds( cos_s ) - `Ds( sin_s )  ;
-                    6 : COLORs <=                - `Ds( sin_s )  ;
-                    7 : COLORs <=   `Ds( cos_s ) - `Ds( sin_s )  ;
+                    5 : COLORs <= - `Ds( cos_s ) + `Ds( sin_s )  ;
+                    6 : COLORs <=                + `Ds( sin_s )  ;
+                    7 : COLORs <=   `Ds( cos_s ) + `Ds( sin_s )  ;
                 endcase
     `p C_PEDE = 205 ;
     `r[9:0] VIDEOs ;
@@ -101,7 +101,7 @@ module VIDEO_SQU
                 VIDEOs <= 
                     {MV_RAMPs,1'b0} 
                     + C_PEDE 
-                    + `Ds({COLORs,{4{~COLORs[4]}}}) 
+                    + `Ds({COLORs,{5{~COLORs[4]}}}) 
                 ;
         `e
     `a VIDEOs_o = VIDEOs ;
