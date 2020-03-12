@@ -32,7 +32,7 @@ module VIDEO_SQU
     `w[3:0]  cos_s            ;//6 start
     VIDEO_SQU_TG
         #(
-              .C_PX_DLY         ( 2              )
+              .C_PX_DLY         ( 3              )
             , .C_CBURST_DLY_N   ( 2              )
             , .C_XCBURST_SHUF   ( C_XCBURST_SHUF )
         )VIDEO_SQU_TG
@@ -83,6 +83,7 @@ module VIDEO_SQU
     `p C_PEDE = 10'd205 ;
     `r[9:0] VIDEOs ;
     `r      XBLK ;
+    `r      XBLK_AD2 ;
     `w[11:0] VIDEOs_a ;//2s
     `a VIDEOs_a = {3'b000,MV_RAMPs,1'b0} 
                     + C_PEDE 
@@ -95,7 +96,8 @@ module VIDEO_SQU
             VIDEOs <= C_PEDE ;
        `e else `cke
         `b
-            XBLK <= XBLK_AD ;
+            XBLK_AD2 <= XBLK_AD ;
+            XBLK <= XBLK_AD2 ;
             if( ~ XSYNC )
                 VIDEOs <= 0 ;
             else if( COLOR_BAR_NOW )
