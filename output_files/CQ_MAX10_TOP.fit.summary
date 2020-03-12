@@ -1,12 +1,12 @@
-Fitter Status : Successful - Thu Mar 12 10:23:13 2020
+Fitter Status : Successful - Thu Mar 12 12:02:44 2020
 Quartus Prime Version : 18.1.0 Build 625 09/12/2018 SJ Lite Edition
 Revision Name : CQ_MAX10_TOP
 Top-level Entity Name : CQ_MAX10_TOP
 Family : MAX 10
 Device : 10M08SAE144C8G
 Timing Models : Final
-Total logic elements : 464 / 8,064 ( 6 % )
-    Total combinational functions : 441 / 8,064 ( 5 % )
+Total logic elements : 471 / 8,064 ( 6 % )
+    Total combinational functions : 449 / 8,064 ( 6 % )
     Dedicated logic registers : 253 / 8,064 ( 3 % )
 Total registers : 253
 Total pins : 92 / 101 ( 91 % )

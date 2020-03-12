@@ -80,9 +80,14 @@ module VIDEO_SQU
                     6 : COLORs <=                + `Ds( sin_s )  ;
                     7 : COLORs <=   `Ds( cos_s ) + `Ds( sin_s )  ;
                 endcase
-    `p C_PEDE = 205 ;
+    `p C_PEDE = 10'd205 ;
     `r[9:0] VIDEOs ;
     `r      XBLK ;
+    `w[11:0] VIDEOs_a ;//2s
+    `a VIDEOs_a = {3'b000,MV_RAMPs,1'b0} 
+                    + C_PEDE 
+                    + ({{2{COLORs[4]}},COLORs,{5{COLORs[4]}}}) 
+    ;
     `ack
         `xar
         `b
@@ -99,9 +104,9 @@ module VIDEO_SQU
                 VIDEOs <= C_PEDE ;
             else
                 VIDEOs <= 
-                    {MV_RAMPs,1'b0} 
-                    + C_PEDE 
-                    + `Ds({COLORs,{5{~COLORs[4]}}}) 
+                     (VIDEOs_a[11]) ? 0 
+                    : (VIDEOs_a[10]) ? ~0
+                    :                VIDEOs_a 
                 ;
         `e
     `a VIDEOs_o = VIDEOs ;
@@ -134,28 +139,16 @@ module TB_VIDEO_SQU
             XARST_i <= 1'b1 ;
     end
 
-    `r      RST_i               ;
-    `w[9:0] HCTRs_o             ;
-    `w[8:0] VCTRs_o             ;
-    `w[7:0]FCTRs_o              ;
-    `w      XBLK_o              ;
-    `w      COLOR_BAR_NOW_o     ;
-    `w      XSYNC_o             ;
-    `w[4:0] COLOR_CTRs_o        ;
-    VIDEO_SQU_TG
-        VIDEO_SQU_TG
+    `r RST_i ;
+    wire[9:0]   VIDEOs_o ;
+    VIDEO_SQU
+        VIDEO_SQU
         (
-              .CK_i             ( CK_i           )//12.27272MHz
-            , .XARST_i          ( XARST_i        )
-            , .CK_EE_i          ( CK_EE_i        )//12.27272MHz
-            , .RST_i            ( RST_i          )
-            , .HCTRs_o          ( HCTRs_o        )
-            , .VCTRs_o          ( VCTRs_o        )
-            , .FCTRs_o          ( FCTRs_o        )
-            , .XBLK_o           ( XBLK_o         )
-            , .COLOR_BAR_NOW_o  ( COLOR_BAR_NOW_o)
-            , .XSYNC_o          ( XSYNC_o        )
-            , .COLOR_CTRs_o     ( COLOR_CTRs_o   )
+              .CK_i     ( CK_i      )      //8*12.27272MHz
+            , .XARST_i  ( XARST_i   )
+            , .CK_EE_i  ( CK_EE_i   )        //12.27272MHz
+            , .RST_i    ( RST_i     )
+            , .VIDEOs_o ( VIDEOs_o    )
         )
     ;
 
