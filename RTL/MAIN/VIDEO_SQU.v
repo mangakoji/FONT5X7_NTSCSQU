@@ -16,7 +16,7 @@ module VIDEO_SQU
     , `in tri1      XARST_i
     , `in tri1      CK_EE_i        //12.27272MHz
     , `in tri0      RST_i
-    , `out `w[9:0] VIDEOs_o
+    , `out `w[4:0] VIDEOs_o
 //    , `out `w       VIDEO_o
 );
 
@@ -26,10 +26,8 @@ module VIDEO_SQU
     `w      XBLK_AD     ;
     `w      COLOR_BAR_NOW   ;
     `w      XSYNC       ;
-//    `w[1:0]  CPHs             ;
-//    `w[2:0]  CCTRs            ;
-    `w[3:0]  sin_s            ;//1 start
-    `w[3:0]  cos_s            ;//6 start
+//    `w[1:0]  CCTRs            ;
+    `w[2:0]  CPHs             ;
     VIDEO_SQU_TG
         #(
               .C_PX_DLY         ( 3              )
@@ -47,47 +45,61 @@ module VIDEO_SQU
             , .XBLK_o           ( XBLK_AD       )
             , .COLOR_BAR_NOW_o  ( COLOR_BAR_NOW )
             , .XSYNC_o          ( XSYNC         )
-//            , .CPHs_o           ( CPHs_o        )
-//            , .CCTRs_o          ( CCTRs_o       )
-            , .sin_s_o          ( sin_s         )
-            , .cos_s_o          ( cos_s         )
+            , .CPHs_o           ( CPHs          )
         )
     ;
 
 
-    `r[7:0] MV_RAMPs ;
+    `r[3:0] MV_RAMPs ;
+    `w[7:0] MV_RAMPs_a ;
+    `a MV_RAMPs_a = HCTRs[9:1] + VCTRs + FCTRs ;
     `ack
         `xar
             MV_RAMPs <= 0 ;
         else `cke
-            MV_RAMPs <= HCTRs[9:1] + VCTRs + FCTRs ;
+            MV_RAMPs <= MV_RAMPs_a[7:5] ;
 
-    `r `s [4:0] COLORs ; //2s
+    `r[2:0] CPHs_NOW ;
+    `r `s [3:0] COLORs ; //2s
     `ack
         `xar
+        `b
+            CPHs_NOW <= 0 ;
             COLORs <= 0 ;
-        else `cke
+        `e else `cke
+        `b
             if( ~ XBLK_AD )
-                COLORs <= $signed( -cos_s ) ;
+                CPHs_NOW <= CPHs + 4 ;
             else 
                 case( HCTRs[8:6] )
-                    0 : COLORs <=   `Ds( cos_s )                 ;
-                    1 : COLORs <=   `Ds( cos_s ) - `Ds( sin_s )  ;
-                    2 : COLORs <=                - `Ds( sin_s )  ;
-                    3 : COLORs <= - `Ds( cos_s ) - `Ds( sin_s )  ;
-                    4 : COLORs <= - `Ds( cos_s )                 ;
-                    5 : COLORs <= - `Ds( cos_s ) + `Ds( sin_s )  ;
-                    6 : COLORs <=                + `Ds( sin_s )  ;
-                    7 : COLORs <=   `Ds( cos_s ) + `Ds( sin_s )  ;
+                    0 : CPHs_NOW <= CPHs + 0 ;
+                    1 : CPHs_NOW <= CPHs + 1 ;
+                    2 : CPHs_NOW <= CPHs + 2 ;
+                    3 : CPHs_NOW <= CPHs + 3 ;
+                    4 : CPHs_NOW <= CPHs + 4 ;
+                    5 : CPHs_NOW <= CPHs + 5 ;
+                    6 : CPHs_NOW <= CPHs + 6 ;
+                    7 : CPHs_NOW <= CPHs + 7 ;
                 endcase
-    `p C_PEDE = 10'd205 ;
-    `r[9:0] VIDEOs ;
+            case( CPHs_NOW )
+                0 : COLORs <=  3 ;
+                1 : COLORs <=  6 ;
+                2 : COLORs <=  6 ;
+                3 : COLORs <=  3 ;
+                4 : COLORs <= -3 ;
+                5 : COLORs <= -6 ;
+                6 : COLORs <= -6 ;
+                7 : COLORs <= -3 ;
+            endcase
+        `e
+    `p C_PEDE = 5'd12  ;
+    `r[4:0] VIDEOs ; //5
     `r      XBLK ;
     `r      XBLK_AD2 ;
-    `w[11:0] VIDEOs_a ;//2s
-    `a VIDEOs_a = {3'b000,MV_RAMPs,1'b0} 
+    `w[6:0] VIDEOs_a ;//2s
+    `a VIDEOs_a = {2'b00,MV_RAMPs,1'b0} 
                     + C_PEDE 
-                    + ({{2{COLORs[4]}},COLORs,{5{COLORs[4]}}}) 
+                    + ({{3{COLORs[3]}},COLORs}) 
     ;
     `ack
         `xar
@@ -101,13 +113,13 @@ module VIDEO_SQU
             if( ~ XSYNC )
                 VIDEOs <= 0 ;
             else if( COLOR_BAR_NOW )
-                VIDEOs <= C_PEDE + `Ds( {COLORs, {4{~COLORs[4]}}} );
+                VIDEOs <= C_PEDE + `Ds( {{3{COLORs[3]}},COLORs});
             else if( ~ XBLK )
                 VIDEOs <= C_PEDE ;
             else
                 VIDEOs <= 
-                     (VIDEOs_a[11]) ? 0 
-                    : (VIDEOs_a[10]) ? ~0
+                     (VIDEOs_a[6]) ? 0 
+                    : (VIDEOs_a[5]) ? ~0
                     :                VIDEOs_a 
                 ;
         `e
@@ -142,7 +154,7 @@ module TB_VIDEO_SQU
     end
 
     `r RST_i ;
-    wire[9:0]   VIDEOs_o ;
+    wire[4:0]   VIDEOs_o ;
     VIDEO_SQU
         VIDEO_SQU
         (

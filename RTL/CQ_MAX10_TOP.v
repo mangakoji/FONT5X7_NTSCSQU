@@ -137,7 +137,7 @@ module CQ_MAX10_TOP
 //        , .B_IN_i       ( P57       )
 //    assign P58 = 1'b0 ;
 
-    wire[9:0]   VIDEOs ;
+    wire[4:0]   VIDEOs ;
     VIDEO_SQU
         VIDEO_SQU
         (
@@ -149,13 +149,13 @@ module CQ_MAX10_TOP
         )
     ;
     `r      VIDEO ;
-    `r[10:0] VIDEO_DSs ;
+    `r[5:0] VIDEO_DSs ;
     `ack
         `xar
             VIDEO_DSs <= 0 ;
         else
-            VIDEO_DSs <= {1'b0 , VIDEO_DSs[9:0]} + {1'b0,VIDEOs}; 
-    `w VIDEO_o = VIDEO_DSs[10] ;
+            VIDEO_DSs <= {1'b0 , VIDEO_DSs[4:0]} + {1'b0,VIDEOs}; 
+    `w VIDEO_o = VIDEO_DSs[5] ;
 
     
     wire [63:0] BJO_DBGOs ;

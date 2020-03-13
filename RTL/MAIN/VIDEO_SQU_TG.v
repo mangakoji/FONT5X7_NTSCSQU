@@ -22,10 +22,8 @@ module VIDEO_SQU_TG
     , `out `w       XBLK_o
     , `out `w       COLOR_BAR_NOW_o
     , `out `w       XSYNC_o
-    , `out `w[1:0]  CPHs_o
-    , `out `w[2:0]  CCTRs_o 
-    , `out `w[3:0]  sin_s_o //1 start
-    , `out `w[3:0]  cos_s_o //6 start
+    , `out `w[2:0]  CPHs_o
+    , `out `w[1:0]  CCTRs_o 
 );
     `p C_H_PX_N                 = 780       ;
     `p C_H_ACT_PX_N             = 640       ;
@@ -184,58 +182,26 @@ module VIDEO_SQU_TG
 
 
     //24clock -> 7fsc
-    `r[2:0]CCTRs ;
-    `r[1:0]CPHs ;
+    `r[1:0]CCTRs ;
+    `r[2:0]CPHs ;
     `w Ccy ;
-    `a Ccy = CCTRs == 6 ;
     `ack
         `xar
-            {CPHs,CCTRs} <= 1 ;
+            {CPHs,CCTRs} <= 0 ;
         else `cke
         `b
             if( RST_i )
-                {CPHs,CCTRs} <= 1 ;
+                {CPHs,CCTRs} <= 0 ;
             else if( ~C_XCBURST_SHUF & HSYNC_LONG_H_a & VSYNC_L_fast_a)
-                CPHs <= FCTRs[1:0]  ;
+                CPHs <= {FCTRs[1:0],1'b0}  ;
             else
             `b
-                if( Ccy )
-                    CCTRs <= 1  ;
-                else
-                    CCTRs <= CCTRs + 1 ;
-                case( {CPHs,CCTRs} )
-                    5'b00_001 : CPHs <= 2'b01 ;
-                    5'b01_010 : CPHs <= 2'b11 ;
-                    5'b11_011 : CPHs <= 2'b10 ;
-                    5'b10_100 : CPHs <= 2'b00 ;
-                    5'b00_101 : CPHs <= 2'b01 ;
-                    5'b01_110 : CPHs <= 2'b10 ;
-                    5'b10_001 : CPHs <= 2'b00 ;
-                    5'b00_010 : CPHs <= 2'b01 ;
-                    5'b01_011 : CPHs <= 2'b11 ;
-                    5'b11_100 : CPHs <= 2'b10 ;
-                    5'b10_101 : CPHs <= 2'b00 ;
-                    5'b00_110 : CPHs <= 2'b11 ;
-                    5'b11_001 : CPHs <= 2'b10 ;
-                    5'b10_010 : CPHs <= 2'b00 ;
-                    5'b00_011 : CPHs <= 2'b01 ;
-                    5'b01_100 : CPHs <= 2'b11 ;
-                    5'b11_101 : CPHs <= 2'b10 ;
-                    5'b10_110 : CPHs <= 2'b01 ;
-                    5'b01_001 : CPHs <= 2'b11 ;
-                    5'b11_010 : CPHs <= 2'b10 ;
-                    5'b10_011 : CPHs <= 2'b00 ;
-                    5'b00_100 : CPHs <= 2'b01 ;
-                    5'b01_101 : CPHs <= 2'b11 ;
-                    5'b11_110 : CPHs <= 2'b00 ;
-                    default : CPHs <= 2'b00 ;
-                endcase
+                CCTRs <= (CCTRs[1])? 0 : CCTRs+1 ;
+                CPHs <= CPHs + 2 + CCTRs[1] ;
             `e
         `e
     `a CPHs_o = CPHs ;
     `a CCTRs_o = CCTRs ;
-    `a sin_s_o = {CPHs[1],{3{CPHs[0]}}^CCTRs} ;
-    `a cos_s_o = {CPHs[0],{3{CPHs[1]}}^CCTRs} ;
 endmodule
 //VIDEO_SQU_TG
 
@@ -273,10 +239,8 @@ module TB_VIDEO_SQU_TG
     `w      COLOR_BAR_NOW_o     ;
     `w      XSYNC_o             ;
     `w[4:0] COLOR_CTRs_o        ;
-    `w[1:0]  CPHs_o             ;
-    `w[2:0]  CCTRs_o            ;
-    `w[3:0]  sin_s_o            ;//1 start
-    `w[3:0]  cos_s_o            ;//6 start
+    `w[2:0]  CPHs_o             ;
+    `w[1:0]  CCTRs_o            ;
     VIDEO_SQU_TG
         VIDEO_SQU_TG
         (
@@ -292,8 +256,6 @@ module TB_VIDEO_SQU_TG
             , .XSYNC_o          ( XSYNC_o        )
             , .CPHs_o           ( CPHs_o        )
             , .CCTRs_o          ( CCTRs_o       )
-            , .sin_s_o          ( sin_s_o       )
-            , .cos_s_o          ( cos_s_o       )
         )
     ;
 
