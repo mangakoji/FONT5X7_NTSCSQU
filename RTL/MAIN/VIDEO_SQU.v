@@ -113,7 +113,7 @@ module VIDEO_SQU
             if( ~ XSYNC )
                 VIDEOs <= 0 ;
             else if( COLOR_BAR_NOW )
-                VIDEOs <= C_PEDE + `Ds( {{3{COLORs[3]}},COLORs});
+                VIDEOs <= C_PEDE + `Ds( {{4{COLORs[3]}},COLORs[3:1]});
             else if( ~ XBLK )
                 VIDEOs <= C_PEDE ;
             else
