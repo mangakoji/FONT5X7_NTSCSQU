@@ -1,10 +1,10 @@
-Analysis & Synthesis Status : Successful - Fri Mar 13 21:23:32 2020
+Analysis & Synthesis Status : Successful - Fri Mar 13 21:47:06 2020
 Quartus Prime Version : 18.1.0 Build 625 09/12/2018 SJ Lite Edition
 Revision Name : CQ_MAX10_TOP
 Top-level Entity Name : CQ_MAX10_TOP
 Family : MAX 10
-Total logic elements : 391
-    Total combinational functions : 366
+Total logic elements : 389
+    Total combinational functions : 364
     Dedicated logic registers : 241
 Total registers : 241
 Total pins : 92

@@ -193,7 +193,7 @@ module VIDEO_SQU_TG
             if( RST_i )
                 {CPHs,CCTRs} <= 0 ;
             else if( ~C_XCBURST_SHUF & HSYNC_LONG_H_a & VSYNC_L_fast_a)
-                CPHs <= {FCTRs[1:0],1'b0}  ;
+                CPHs <= CPHs + 2 ;//{FCTRs[1:0],1'b0}  ;
             else
             `b
                 CCTRs <= (CCTRs[1])? 0 : CCTRs+1 ;

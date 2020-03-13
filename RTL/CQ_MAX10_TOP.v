@@ -139,6 +139,9 @@ module CQ_MAX10_TOP
 
     wire[4:0]   VIDEOs ;
     VIDEO_SQU
+//        #(
+//              .C_XCBURST_SHUF     ( 1'b1 )
+//        )
         VIDEO_SQU
         (
               .CK_i     ( CK_i      )      //8*12.27272MHz
