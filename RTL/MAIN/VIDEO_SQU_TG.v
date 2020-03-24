@@ -20,7 +20,7 @@ module VIDEO_SQU_TG
     , `out `w[8:0]  VCTRs_o
     , `out `w[7:0]  FCTRs_o
     , `out `w       XBLK_o
-    , `out `w       COLOR_BAR_NOW_o
+    , `out `w       CBURST_NOW_o
     , `out `w       XSYNC_o
     , `out `w[2:0]  CPHs_o
     , `out `w[1:0]  CCTRs_o 
@@ -28,8 +28,8 @@ module VIDEO_SQU_TG
     `p C_H_PX_N                 = 780       ;
     `p C_H_ACT_PX_N             = 640       ;
     `p C_H_SYNC_N               = 58        ;//4.7us
-    `p C_H_FRONT_COLOR_BAR_N    = 64        ;//19sccycle
-    `p C_H_COLOR_BAR_N          = 31        ;//9cycle
+    `p C_H_FRONT_CBURST_N    = 64        ;//19sccycle
+    `p C_H_CBURST_N          = 31        ;//9cycle
     `p C_H_BACK_PORCH_N        = 121       ;//9.4us+6ck from sync ne
 //    `p C_H_FRONT_PORCH_N         = 19      ;
 
@@ -145,40 +145,40 @@ module VIDEO_SQU_TG
               && VCTRs < (C_V_ACT_LINE_N + C_V_SYNC_OFS_N + 9 -1)
           ) 
     ;
-    `r  COLOR_BAR_NOW ;
+    `r  CBURST_NOW ;
     `ack
         `xar
-            COLOR_BAR_NOW <= 1'b0 ;
+            CBURST_NOW <= 1'b0 ;
         else `cke
         if(
                 HCTRs==
                 (
                       C_H_PX_N
                     - C_H_BACK_PORCH_N
-                    + C_H_FRONT_COLOR_BAR_N
-                    + C_H_COLOR_BAR_N
+                    + C_H_FRONT_CBURST_N
+                    + C_H_CBURST_N
                     - C_CBURST_DLY_N
                     - 1
                 )
             )
-            COLOR_BAR_NOW <= 1'b0 ;
+            CBURST_NOW <= 1'b0 ;
         else if( V_SYNC_a )
         `b
-                COLOR_BAR_NOW <= 1'b0 ;
+                CBURST_NOW <= 1'b0 ;
         `e else 
             if( 
                 HCTRs==
                 (
                       C_H_PX_N
                     - C_H_BACK_PORCH_N
-                    + C_H_FRONT_COLOR_BAR_N
+                    + C_H_FRONT_CBURST_N
                     - C_CBURST_DLY_N
                     - 1
                 )
             )
-                COLOR_BAR_NOW <= 1'b1 ;
+                CBURST_NOW <= 1'b1 ;
     `a XSYNC_o = XSYNC ;
-    `a COLOR_BAR_NOW_o = COLOR_BAR_NOW ;
+    `a CBURST_NOW_o = CBURST_NOW ;
 
 
     //24clock -> 7fsc
@@ -236,7 +236,7 @@ module TB_VIDEO_SQU_TG
     `w[8:0] VCTRs_o             ;
     `w[7:0] FCTRs_o              ;
     `w      XBLK_o              ;
-    `w      COLOR_BAR_NOW_o     ;
+    `w      CBURST_NOW_o     ;
     `w      XSYNC_o             ;
     `w[4:0] COLOR_CTRs_o        ;
     `w[2:0]  CPHs_o             ;
@@ -252,7 +252,7 @@ module TB_VIDEO_SQU_TG
             , .VCTRs_o          ( VCTRs_o        )
             , .FCTRs_o          ( FCTRs_o        )
             , .XBLK_o           ( XBLK_o         )
-            , .COLOR_BAR_NOW_o  ( COLOR_BAR_NOW_o)
+            , .CBURST_NOW_o  ( CBURST_NOW_o)
             , .XSYNC_o          ( XSYNC_o        )
             , .CPHs_o           ( CPHs_o        )
             , .CCTRs_o          ( CCTRs_o       )

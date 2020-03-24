@@ -6,6 +6,7 @@
 //
 //K38u :1st
 `include "../MISC/define.vh"
+`include "./VIDEO_LED_JDG.v"
 `include "./VIDEO_SQU_TG.v"
 `default_nettype none
 module VIDEO_SQU
@@ -16,7 +17,9 @@ module VIDEO_SQU
     , `in tri1      XARST_i
     , `in tri1      CK_EE_i        //12.27272MHz
     , `in tri0      RST_i
+    , `in tri0[17:0] LEDs_ON_i
     , `out `w[4:0] VIDEOs_o
+    , `out `w       HVcy_o
 //    , `out `w       VIDEO_o
 );
 
@@ -24,7 +27,7 @@ module VIDEO_SQU
     `w [8:0] VCTRs      ;
     `w [7:0] FCTRs      ;
     `w      XBLK_AD     ;
-    `w      COLOR_BAR_NOW   ;
+    `w      CBURST_NOW  ;
     `w      XSYNC       ;
 //    `w[1:0]  CCTRs            ;
     `w[2:0]  CPHs             ;
@@ -43,12 +46,12 @@ module VIDEO_SQU
             , .VCTRs_o          ( VCTRs         )
             , .FCTRs_o          ( FCTRs         )
             , .XBLK_o           ( XBLK_AD       )
-            , .COLOR_BAR_NOW_o  ( COLOR_BAR_NOW )
+            , .CBURST_NOW_o     ( CBURST_NOW )
             , .XSYNC_o          ( XSYNC         )
             , .CPHs_o           ( CPHs          )
         )
     ;
-
+    `a HVcy_o = (VCTRs==(240-1)) & (HCTRs==(640-1)) & CK_EE_i ;
 
     `r[3:0] MV_RAMPs ;
     `w[7:0] MV_RAMPs_a ;
@@ -59,6 +62,23 @@ module VIDEO_SQU
         else `cke
             MV_RAMPs <= MV_RAMPs_a[7:5] ;
 
+    `w          LED_HIT         ;
+    `w          LED_COLOR_ON    ;
+    `w [2:0]    LED_COLOR_PHs   ;
+    VIDEO_LED_JDG
+        VIDEO_LED_JDG
+        (
+              .CK_i             ( CK_i          )
+            , .XARST_i          ( XARST_i       )
+            , .CK_EE_i          ( CK_EE_i       )
+            , .LEDs_ON_i        ( LEDs_ON_i     )
+            , .HCTRs_i          ( HCTRs[9:1]    )//0-319-787/2
+            , .VCTRs_i          ( VCTRs         )//0-239-242
+            , .LED_HIT_o        ( LED_HIT       ) //no_use
+            , .LED_COLOR_ON_o   ( LED_COLOR_ON  )
+            , .LED_COLOR_PHs_o  ( LED_COLOR_PHs )
+        ) 
+    ;
     `r[2:0] CPHs_NOW ;
     `r `s [3:0] COLORs ; //2s
     `ack
@@ -71,7 +91,7 @@ module VIDEO_SQU
             if( ~ XBLK_AD )
                 CPHs_NOW <= CPHs + 4 ;
             else 
-                case( HCTRs[8:6] )
+                case( LED_COLOR_PHs )
                     0 : CPHs_NOW <= CPHs + 0 ;
                     1 : CPHs_NOW <= CPHs + 1 ;
                     2 : CPHs_NOW <= CPHs + 2 ;
@@ -97,10 +117,21 @@ module VIDEO_SQU
     `r      XBLK ;
     `r      XBLK_AD2 ;
     `w[6:0] VIDEOs_a ;//2s
-    `a VIDEOs_a = {2'b00,MV_RAMPs,1'b0} 
-                    + C_PEDE 
-                    + ({{3{COLORs[3]}},COLORs}) 
+/*
+    `a VIDEOs_a = 
+        (LED_HIT)
+            ?
+                (30 + C_PEDE)
+            :
+                ( 0 + C_PEDE)
+        + (LED_COLOR_ON)
+            ?
+                $signed( COLORs )
+            :
+                0
     ;
+*/
+    `a VIDEOs_a = 30 + C_PEDE ;
     `ack
         `xar
         `b
@@ -112,7 +143,7 @@ module VIDEO_SQU
             XBLK <= XBLK_AD2 ;
             if( ~ XSYNC )
                 VIDEOs <= 0 ;
-            else if( COLOR_BAR_NOW )
+            else if( CBURST_NOW )
                 VIDEOs <= C_PEDE + `Ds( {{4{COLORs[3]}},COLORs[3:1]});
             else if( ~ XBLK )
                 VIDEOs <= C_PEDE ;

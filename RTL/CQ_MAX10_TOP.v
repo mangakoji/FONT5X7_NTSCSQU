@@ -133,22 +133,39 @@ module CQ_MAX10_TOP
         `e
     
 
-//        , .A_IN_i       ( P59       )
-//        , .B_IN_i       ( P57       )
-//    assign P58 = 1'b0 ;
-
     wire[4:0]   VIDEOs ;
+    `w  HVcy ;
+    
+    `r[5:0] FCTRs ;
+    `r [17:0] LEDs_ON ;
+    `ack
+        `xar
+        `b
+            FCTRs <= 0 ;
+            LEDs_ON <= 0 ;
+        `e else
+        `b
+            if( HVcy )
+            `b
+                FCTRs <= FCTRs + 1 ;
+                if( &FCTRs )
+                    LEDs_ON <= {LEDs_ON , ~LEDs_ON[17]} ;
+            `e
+        `e
+
     VIDEO_SQU
 //        #(
 //              .C_XCBURST_SHUF     ( 1'b1 )
 //        )
         VIDEO_SQU
         (
-              .CK_i     ( CK_i      )      //8*12.27272MHz
-            , .XARST_i  ( XARST_i   )
-            , .CK_EE_i  ( CK_EE     )        //12.27272MHz
-//            , .RST_i    ( )
-            , .VIDEOs_o ( VIDEOs    )
+              .CK_i         ( CK_i      )      //8*12.27272MHz
+            , .XARST_i      ( XARST_i   )
+            , .CK_EE_i      ( CK_EE     )        //12.27272MHz
+//            , .RST_i        ()
+            , .LEDs_ON_i    ( LEDs_ON   )
+            , .HVcy_o       ( HVcy      )
+            , .VIDEOs_o     ( VIDEOs    )
         )
     ;
     `r      VIDEO ;
@@ -174,7 +191,7 @@ module CQ_MAX10_TOP
         (BJ_DBGs[22]) ?
             C_TIMESTAMP
         :
-            0
+            {FCTRs,LEDs_ON} 
     ;
 
 //    assign P41 = DAC_DONE_o ;
