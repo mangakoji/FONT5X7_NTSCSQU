@@ -1,0 +1,112 @@
+
+`default_nettype none
+`include "../MISC/define.vh"
+module VIDEO_LED_JDG
+#(
+      `p C_LED_N = 18
+    , `p C_LOCsss    = 
+        {
+             {24'h010_010}
+            ,{24'h010_020}
+            ,{24'h010_030}
+            ,{24'h010_040}
+
+            ,{24'h020_010}
+            ,{24'h020_020}
+            ,{24'h020_030}
+            ,{24'h020_040}
+
+            ,{24'h070_050}
+            ,{24'h070_060}
+
+            ,{24'h0A0_070}
+            ,{24'h0A0_080}
+            ,{24'h0A0_090}
+            ,{24'h0C0_0A0}
+
+            ,{24'h0C0_090}
+            ,{24'h0B0_110}
+            ,{24'h0BF_120}
+            ,{24'h0BF_130}
+        }
+    , `p C_LEDs_COLOR_ON = 18'b0111_1111_1_1_1111_0111
+    , `p C_LEDs_COLORs   = 72'h1076_5432_1_0_7654_3210
+)(
+      `in `w            CK_i
+    , `in `w            XARST_i
+    , `in `w            CK_EE_i
+    , `in`w[C_LED_N-1:0]    LEDs_ON_i
+    , `in `w[8:0]       HCTRs_i //0-319-787/2
+    , `in `w[7:0]       VCTRs_i //0-239-242
+    , `out `w           LED_HIT_o
+    , `out `w           LED_COLOR_ON_o
+    , `out `w[2:0]      LED_COLOR_PHs_o
+) ;
+    `func `int log2;
+        `in `int value ;
+    `b
+        value = value-1;
+        for (log2=0; value>0; log2=log2+1)
+            value = value>>1;
+    `e `efunc
+    `lp C_LED_NW = log2( C_LED_N ) ;
+
+    `func f_LED_hit ;
+        `in[8:0]HCTRs ; //0-320
+        `in[7:0]VCTRs ; //0-240
+        `in[8:0]LOC_Xs ;
+        `in[7:0]LOC_Ys ;
+        `int Xs ;
+        `int Ys ;
+    `b
+        Xs = {32'b0,HCTRs} - {32'b0,LOC_Xs} ;
+        Xs = Xs[31]?(~Xs):Xs ;
+        Ys = {32'b0,VCTRs} - {32'b0,LOC_Ys} ;
+        Ys = Ys[31]?(~Ys):Ys ;
+        f_LED_hit = (Xs <= 7) ;
+        f_LED_hit = f_LED_hit & (Ys <= 7) ;
+//        f_LED_hit = f_LED_hit & ~((Xs+Ys)>=5) ;
+    `e `efunc
+
+    `func [31:0] f_HIT_LED_idx_s ;
+        `in[8:0] HCTRs_i ;
+        `in[7:0] VCTRs_i ;
+        `int ii ;
+    `b
+        f_HIT_LED_idx_s = ~0 ;
+        for(ii=C_LED_N-1;ii>=0;ii=ii-1)
+            if(
+                f_LED_hit
+                (
+                      HCTRs_i
+                    , VCTRs_i
+                    , C_LOCsss[ii*24    +:12]
+                    , C_LOCsss[ii*24+12 +:12]
+                )
+            )
+                f_HIT_LED_idx_s = ii ;
+    `e `efunc
+
+    `r[C_LED_NW:0] HIT_LED_IDXs ;//use ++1bit
+    `r      LED_HIT     ;
+    `r      LED_COLOR_ON;
+    `r[2:0] LED_COLOR_PHs  ;
+    `ack
+        `xar
+        `b 
+            HIT_LED_IDXs <= ~0 ;
+            LED_HIT <= 1'b0 ;
+            LED_COLOR_ON <= 1'b0 ;
+            LED_COLOR_PHs <= 0 ;
+        `e else `cke
+        `b
+            HIT_LED_IDXs <= f_HIT_LED_idx_s(HCTRs_i,VCTRs_i) ;
+            LED_HIT <= ~(& HIT_LED_IDXs) & LEDs_ON_i[ HIT_LED_IDXs ] ;
+            LED_COLOR_ON <= C_LEDs_COLOR_ON[ HIT_LED_IDXs] ;
+            LED_COLOR_PHs <=C_LEDs_COLORs[ HIT_LED_IDXs*4 +:3] ;
+        `e
+    `a LED_HIT_o = LED_HIT ;
+    `a LED_COLOR_ON_o = LED_COLOR_ON ;
+    `a LED_COLOR_PHs_o = LED_COLOR_PHs ;
+endmodule
+//

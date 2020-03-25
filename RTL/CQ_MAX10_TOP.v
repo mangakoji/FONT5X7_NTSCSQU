@@ -136,7 +136,7 @@ module CQ_MAX10_TOP
     wire[4:0]   VIDEOs ;
     `w  HVcy ;
     
-    `r[5:0] FCTRs ;
+    `r[3:0] FCTRs ;
     `r [17:0] LEDs_ON ;
     `ack
         `xar
@@ -174,7 +174,10 @@ module CQ_MAX10_TOP
         `xar
             VIDEO_DSs <= 0 ;
         else
-            VIDEO_DSs <= {1'b0 , VIDEO_DSs[4:0]} + {1'b0,VIDEOs}; 
+            if( VIDEOs==0)
+                VIDEO_DSs <= 0 ;
+            else
+                VIDEO_DSs <= {1'b0 , VIDEO_DSs[4:0]} + {1'b0,VIDEOs}; 
     `w VIDEO_o = VIDEO_DSs[5] ;
 
     

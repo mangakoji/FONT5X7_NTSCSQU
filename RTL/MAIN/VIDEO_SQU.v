@@ -117,21 +117,23 @@ module VIDEO_SQU
     `r      XBLK ;
     `r      XBLK_AD2 ;
     `w[6:0] VIDEOs_a ;//2s
-/*
     `a VIDEOs_a = 
         (LED_HIT)
             ?
                 (30 + C_PEDE)
             :
                 ( 0 + C_PEDE)
-        + (LED_COLOR_ON)
+        + $signed
+        ( 
+            ( LED_COLOR_ON )
             ?
-                $signed( COLORs )
+                0+$signed( COLORs )
             :
                 0
+        )
     ;
-*/
-    `a VIDEOs_a = 30 + C_PEDE ;
+
+//    `a VIDEOs_a = 30 + C_PEDE ;
     `ack
         `xar
         `b
