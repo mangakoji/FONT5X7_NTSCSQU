@@ -49,7 +49,7 @@ module VIDEO_LED_JDG
         for (log2=0; value>0; log2=log2+1)
             value = value>>1;
     `e `efunc
-    `lp C_LED_NW = log2( C_LED_N ) ;
+    `lp C_LED_NW = log2( C_LED_N +1) ;
 
     `func f_LED_hit ;
         `in[8:0]HCTRs ; //0-320
@@ -87,7 +87,7 @@ module VIDEO_LED_JDG
                 f_HIT_LED_idx_s = ii ;
     `e `efunc
 
-    `r[C_LED_NW:0] HIT_LED_IDXs ;//use ++1bit
+    `r[C_LED_NW-1:0] HIT_LED_IDXs ;//use ++1bit
     `r      LED_HIT     ;
     `r      LED_COLOR_ON;
     `r[2:0] LED_COLOR_PHs  ;
@@ -101,9 +101,18 @@ module VIDEO_LED_JDG
         `e else `cke
         `b
             HIT_LED_IDXs <= f_HIT_LED_idx_s(HCTRs_i,VCTRs_i) ;
-            LED_HIT <= ~(& HIT_LED_IDXs) & LEDs_ON_i[ HIT_LED_IDXs ] ;
-            LED_COLOR_ON <= C_LEDs_COLOR_ON[ HIT_LED_IDXs] ;
-            LED_COLOR_PHs <=C_LEDs_COLORs[ HIT_LED_IDXs*4 +:3] ;
+//            LED_HIT <= (~(& HIT_LED_IDXs)) & LEDs_ON_i[ HIT_LED_IDXs ] ;
+            LED_HIT <= LEDs_ON_i[ HIT_LED_IDXs ]  & ~(&HIT_LED_IDXs) ;
+            LED_COLOR_ON <= C_LEDs_COLOR_ON[ HIT_LED_IDXs] & ~(&HIT_LED_IDXs) ;
+            LED_COLOR_PHs <=
+                C_LEDs_COLORs[ HIT_LED_IDXs*4 +:3]
+                &(
+                    (&HIT_LED_IDXs)
+                    ?
+                        0
+                    :~0
+                )
+            ;
         `e
     `a LED_HIT_o = LED_HIT ;
     `a LED_COLOR_ON_o = LED_COLOR_ON ;

@@ -18,7 +18,7 @@ module VIDEO_SQU
     , `in tri1      CK_EE_i        //12.27272MHz
     , `in tri0      RST_i
     , `in tri0[17:0] LEDs_ON_i
-    , `out `w[4:0] VIDEOs_o
+    , `out `w[5:0] VIDEOs_o
     , `out `w       HVcy_o
 //    , `out `w       VIDEO_o
 );
@@ -79,6 +79,7 @@ module VIDEO_SQU
             , .LED_COLOR_PHs_o  ( LED_COLOR_PHs )
         ) 
     ;
+//    `a LED_COLOR_PHs = 3 ;
     `r[2:0] CPHs_NOW ;
     `r `s [3:0] COLORs ; //2s
     `ack
@@ -113,26 +114,34 @@ module VIDEO_SQU
             endcase
         `e
     `p C_PEDE = 5'd12  ;
-    `r[4:0] VIDEOs ; //5
+    `r[5:0] VIDEOs ; //6
     `r      XBLK ;
     `r      XBLK_AD2 ;
-    `w[6:0] VIDEOs_a ;//2s
+    `w[7:0] VIDEOs_a ;//2s
     `a VIDEOs_a = 
-        (LED_HIT)
+        (
+            ( LED_HIT)
             ?
                 (30 + C_PEDE)
             :
                 ( 0 + C_PEDE)
-        + $signed
+        )+ $signed
         ( 
             ( LED_COLOR_ON )
             ?
-                0+$signed( COLORs )
+                $signed( COLORs )
             :
                 0
         )
     ;
-
+//    `a VIDEOs_a = 
+//        (LED_HIT)
+//            ?
+//                (30 + C_PEDE) + $signed( COLORs )
+//            :
+//                ( 0 + C_PEDE)
+//    ;
+//
 //    `a VIDEOs_a = 30 + C_PEDE ;
     `ack
         `xar
@@ -146,13 +155,13 @@ module VIDEO_SQU
             if( ~ XSYNC )
                 VIDEOs <= 0 ;
             else if( CBURST_NOW )
-                VIDEOs <= C_PEDE + `Ds( {{4{COLORs[3]}},COLORs[3:1]});
+                VIDEOs <= C_PEDE + `Ds( {{4{COLORs[3]}},COLORs[3:0]});
             else if( ~ XBLK )
                 VIDEOs <= C_PEDE ;
             else
                 VIDEOs <= 
-                     (VIDEOs_a[6]) ? 0 
-                    : (VIDEOs_a[5]) ? ~0
+                     (VIDEOs_a[7]) ? 0 
+                    : (VIDEOs_a[6]) ? ~0
                     :                VIDEOs_a 
                 ;
         `e
@@ -188,6 +197,7 @@ module TB_VIDEO_SQU
 
     `r RST_i ;
     wire[4:0]   VIDEOs_o ;
+    `r[17:0] LEDs_ON_i ;
     VIDEO_SQU
         VIDEO_SQU
         (
@@ -195,6 +205,7 @@ module TB_VIDEO_SQU
             , .XARST_i  ( XARST_i   )
             , .CK_EE_i  ( CK_EE_i   )        //12.27272MHz
             , .RST_i    ( RST_i     )
+            , .LEDs_ON_i( LEDs_ON_i )
             , .VIDEOs_o ( VIDEOs_o    )
         )
     ;
@@ -203,6 +214,7 @@ module TB_VIDEO_SQU
     initial
     `b
         RST_i <= 1'b1 ;
+        LEDs_ON_i   <= ~ 0 ;
         repeat(100)@(`pe CK_i) ;
         RST_i <= 1'b0  ;
         for(ii=0;ii<=(2**19);ii=ii+1)

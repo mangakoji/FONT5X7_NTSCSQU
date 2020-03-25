@@ -133,7 +133,7 @@ module CQ_MAX10_TOP
         `e
     
 
-    wire[4:0]   VIDEOs ;
+    wire[5:0]   VIDEOs ;
     `w  HVcy ;
     
     `r[3:0] FCTRs ;
@@ -169,7 +169,7 @@ module CQ_MAX10_TOP
         )
     ;
     `r      VIDEO ;
-    `r[5:0] VIDEO_DSs ;
+    `r[6:0] VIDEO_DSs ;
     `ack
         `xar
             VIDEO_DSs <= 0 ;
@@ -177,8 +177,8 @@ module CQ_MAX10_TOP
             if( VIDEOs==0)
                 VIDEO_DSs <= 0 ;
             else
-                VIDEO_DSs <= {1'b0 , VIDEO_DSs[4:0]} + {1'b0,VIDEOs}; 
-    `w VIDEO_o = VIDEO_DSs[5] ;
+                VIDEO_DSs <= {1'b0 , VIDEO_DSs[5:0]} + {1'b0,VIDEOs}; 
+    `w VIDEO_o = VIDEO_DSs[6] ;
 
     
     wire [63:0] BJO_DBGOs ;
