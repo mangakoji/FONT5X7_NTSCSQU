@@ -199,7 +199,7 @@ module CQ_MAX10_TOP
 
 //    assign P41 = DAC_DONE_o ;
     assign P43 = VIDEO_o ;
-    assign P44 = 1'b1 ;
+    assign P44 = 1'b0 ;
     assign XLED_R_o         = ~ BJ_DBGs[ 23 ] ;
     assign XLED_G_o         = ~ BJ_DBGs[ 23 ] ;
     assign XLED_B_o         = ~ BJ_DBGs[ 23 ] ;

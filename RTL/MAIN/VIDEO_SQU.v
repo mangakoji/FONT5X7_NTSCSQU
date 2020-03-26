@@ -119,25 +119,24 @@ module VIDEO_SQU
     `r      XBLK_AD2 ;
     `w[7:0] VIDEOs_a ;//2s
     `a VIDEOs_a = 
-        (
-            ( LED_HIT)
-            ?
-                (30 + C_PEDE)
-            :
-                ( 0 + C_PEDE)
-        )+ $signed
-        ( 
-            ( LED_COLOR_ON )
-            ?
-                $signed( COLORs )
-            :
-                0
-        )
+        ( LED_HIT)
+        ?
+            (  9 + C_PEDE)
+            + $signed
+            ( 
+                ( LED_COLOR_ON )
+                ?   
+                    $signed( COLORs )
+                :   
+                    0
+            )
+        :
+            ( 0 + C_PEDE)
     ;
 //    `a VIDEOs_a = 
 //        (LED_HIT)
 //            ?
-//                (30 + C_PEDE) + $signed( COLORs )
+//                (24 + C_PEDE) + $signed( COLORs )
 //            :
 //                ( 0 + C_PEDE)
 //    ;
@@ -155,7 +154,7 @@ module VIDEO_SQU
             if( ~ XSYNC )
                 VIDEOs <= 0 ;
             else if( CBURST_NOW )
-                VIDEOs <= C_PEDE + `Ds( {{4{COLORs[3]}},COLORs[3:0]});
+                VIDEOs <= C_PEDE + `Ds( {{4{COLORs[3]}},COLORs[3:1]});
             else if( ~ XBLK )
                 VIDEOs <= C_PEDE ;
             else
@@ -209,12 +208,16 @@ module TB_VIDEO_SQU
             , .VIDEOs_o ( VIDEOs_o    )
         )
     ;
+    `al@(`pe CK_i or `ne XARST_i)
+        if( ~XARST_i)
+            LEDs_ON_i   <= ~ 0 ;
+        else if(VIDEO_SQU.HVcy_o)
+            LEDs_ON_i <= ~ LEDs_ON_i ;
 
     `int ii ;
     initial
     `b
         RST_i <= 1'b1 ;
-        LEDs_ON_i   <= ~ 0 ;
         repeat(100)@(`pe CK_i) ;
         RST_i <= 1'b0  ;
         for(ii=0;ii<=(2**19);ii=ii+1)
