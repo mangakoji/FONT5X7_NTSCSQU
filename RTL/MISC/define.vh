@@ -1,6 +1,8 @@
 //
     `define ack always@(posedge CK_i or negedge XARST_i)
+    `define sck always@(posedge CK_i)
     `define xar if(~XARST_i)
+    `define xsr if(~XSRST_i)
     `define cke if(CK_EE_i)
     `define b   begin
     `define C   begin
@@ -19,7 +21,9 @@
     `define int integer
     `define gen generate
     `define egen endgenerate
+    `define gv genvar
     `define p   parameter
+    `define param parameter
     `define lp  localparam
     `define pe  posedge
     `define ne  negedge
@@ -27,3 +31,4 @@
     `define init initial
     `define al always
     `define elif else if
+    `define elsif else if
