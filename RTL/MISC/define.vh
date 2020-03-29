@@ -16,6 +16,7 @@
     `define Ds  $signed
     `define in  input
     `define out output
+    `define io inout
     `define w   wire
     `define r   reg
     `define int integer
@@ -33,7 +34,7 @@
     `define elif else if
 //    `define elsif else if //alrady used ,who? where
     `define emodule endmodule
-    `ifdef TAN_FPGA
+    `ifdef TANG_FPGA
         `define tri0 wire
         `define tri1 wire
     `else

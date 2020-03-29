@@ -3,12 +3,7 @@
 // K3Fu :1st
 
 `default_nettype none
-`define in input
-`define out output
-`define io inout
-`define w wire
-`define r reg
-`define p parameter
+`include "../../RTL/MISC/define.vh"
 module TANG_PRiMER
 (
       `in `w CK24M_i
@@ -147,108 +142,65 @@ module TANG_PRiMER
             , .extlock      ( PLL_LOCKED )
         )
     ;
-    `r[2:0]RST_48M_Ds ;
-    `al@(`pe CK48M or `ne PLL_LOCKED)
-        if( ~ PLL_LOCKED)
-            RST_48M_Ds <= 0 ;
-        else
-            RST_48M_Ds <= {RST_48M_Ds,1'b1} ;
-    `w XARST_48M = RST_48M_Ds[2] ;
+    `lp C_F_CK = 135_000_000 ;
 
-    wire    [ 3 :0] test_score_led  ;
-    wire            start           ; //play start('1':start)
-    wire            timing_1ms      ; //1ms timig pulse out
-    wire            tempo_led       ;
-    wire            aud_l           ; //1bitDSM-DAC
-    assign start = ~ zUSR_KEY_i ;
-    MELODY_CHIME
-        MELODY_CHIME
-        (
-              .CK_i             ( CK48M             ) //system clock
-            , .XARST_i          ( XARST_48M         )
-            , .START_i          ( start             ) //play start('1':start)
-            , .TIMING_1MS_o     ( timing_1ms        ) //1ms timig pulse out
-            , .AUDIO_L_o        ( aud_l             ) //1bitDSM-DAC
-            , .AUDIO_R_o        ()                    //same aud_l_out
-            , .TEMPO_LED_o      ( tempo_led         )
-            , .DB_SCORE_LEDs_o  ( test_score_led    )
-        ) 
-    ; //melodychime_top
-    assign zLED_R_o = ~ tempo_led ;
-//    assign zLED_G_o = ~ test_score_led[0]   ;
-    assign zLED_B_o = ~ timing_1ms ;
-    assign J2_02 = aud_l ;
-    assign J2_04 = ~ aud_l ;
-
-    `r[2:0]RST_135M_Ds ;
+    `r[2:0]XRST_135M_Ds ;
     `al@(`pe CK135M or `ne PLL_LOCKED)
         if( ~ PLL_LOCKED)
-            RST_135M_Ds <= 0 ;
+            XRST_135M_Ds <= 0 ;
         else
-            RST_135M_Ds <= {RST_135M_Ds,1'b1} ;
-    `w XARST_135M = RST_135M_Ds[2] ;
-    `r      CK_EE ;
-    `r[3:0] PCTRs ;
-    `al@(`pe CK135M or `ne XARST_135M)
-        if(~XARST_135M)
-            {CK_EE , PCTRs} <= 0 ;
-        else
-        `b
-            CK_EE <= & {~PCTRs} ;
-            if(PCTRs==10)
-                PCTRs <= 0 ;
-            else
-                PCTRs <= PCTRs + 1 ;
-        `e
-    wire[4:0]   VIDEOs ;
-    VIDEO_SQU
-//        #(
-//              .C_XCBURST_SHUF     ( 1'b1 )
-//        )
-        VIDEO_SQU
+            XRST_135M_Ds <= {XRST_135M_Ds,1'b1} ;
+    `w XARST_135M = XRST_135M_Ds[2] ;
+
+
+    `w VIDEO_o ;
+    `w SOUND_o ;
+    `w [17:0]LEDs_ON_o ;
+    PLANET_EMP_TOP
+        #(      .C_F_CK     ( C_F_CK    )
+        ) PLANET_EMP_TOP
         (
-              .CK_i     ( CK135M        )      //8*12.27272MHz
-            , .XARST_i  ( XARST_135M    )
-            , .CK_EE_i  ( CK_EE         )        //12.27272MHz
-            , .RST_i    ( 1'b0          )
-            , .VIDEOs_o ( VIDEOs        )
-        )
+              .CK_i         ( CK135M        )
+            , .XARST_i      ( XARST_135M    )
+            , .XPSW_i       ( zUSR_KEY_i    )
+            , .VIDEO_o      ( VIDEO_o       )
+            , .SOUND_o      ( SOUND_o       )
+            , .LEDs_ON_o    ( LEDs_ON_o     )
+        )                    
     ;
-    `r      VIDEO ;
-    `r[5:0] VIDEO_DSs ;
-    `al@(`pe CK135M or `ne XARST_135M)
-        if(~XARST_135M)
-            VIDEO_DSs <= 0 ;
-        else
-            VIDEO_DSs <= {1'b0 , VIDEO_DSs[4:0]} + {1'b0,VIDEOs}; 
-    `w VIDEO_o = VIDEO_DSs[5] ;
     `a J2_06 = 1'b0 ;
     `a J2_08 = VIDEO_o ;
-    
+//    assign zLED_R_o = ~ tempo_led ;
+//    assign zLED_G_o = ~ test_score_led[0]   ;
+//    assign zLED_B_o = ~ timing_1ms ;
+    assign J2_02 =   SOUND_o ;
+    assign J2_04 = ~ SOUND_o ;
+
     `include "MISC/TIMESTAMP.v"
     `w[8*128-1:0] BJO_REGss ;
     `w[8*128-1:0] BJ_REGss ;
     `a BJO_REGss[8*(128-4) +: 32] =  C_TIMESTAMP ;
+    `a BJO_REGss[17:0]          = LEDs_ON_o ;
 //    `a BJO_REGss = ~0 ;
     JTAG_REGS
         JTAG_REGS
         (
-              .CK_i     ( CK48M         )
-            , .XARST_i  ( XARST_48M     )
+              .CK_i     ( CK135M         )
+            , .XARST_i  ( XARST_135M     )
             , .CK_EE_i  ( 1'b1          )
             , .DATss_i  ( BJO_REGss     )
             , .REGss_o  ( BJ_REGss      )
         ) 
     ;
     `r [6:0] REG_CTRs ;
-    `al@(`pe CK48M or `ne XARST_48M)
-        if( ~ XARST_48M)
+    `al@(`pe CK135M or `ne XARST_135M)
+        if( ~ XARST_135M)
             REG_CTRs <= 0 ;
         else
             REG_CTRs <= REG_CTRs + 1 ;
     `r[7:0] REG_SGMs ;
-    `al@(`pe CK48M or `ne XARST_48M)
-        if( ~ XARST_48M)
+    `al@(`pe CK135M or `ne XARST_135M)
+        if( ~ XARST_135M)
             REG_SGMs <= 0 ;
         else
             REG_SGMs <= REG_SGMs + (BJ_REGss >> (REG_CTRs*8)) ;
