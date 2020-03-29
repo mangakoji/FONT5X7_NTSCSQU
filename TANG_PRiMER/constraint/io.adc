@@ -1,0 +1,151 @@
+set_pin_assignment {CK24M_i} { LOCATION = K14; }##24MHZ
+set_pin_assignment {zUSR_KEY_i} { LOCATION = K16;  }
+
+## RGB LEDs, 3 pins
+set_pin_assignment {zLED_R_o} { LOCATION =  R3; }##LED_R, R3
+set_pin_assignment {zLED_G_o} { LOCATION = J14; }##LED_G, J14
+set_pin_assignment {zLED_B_o} { LOCATION = P13; }##LED_B, P13
+
+## edge pins
+## J2 
+set_pin_assignment {J2_01} { LOCATION =  D5; }#B5_P
+set_pin_assignment {J2_02} { LOCATION =  A4; }#     B24_N
+set_pin_assignment {J2_03} { LOCATION =  D6; }#B5_N
+set_pin_assignment {J2_04} { LOCATION =  A3; }#     B24_P
+set_pin_assignment {J2_05} { LOCATION =  C6; }#B19_P
+set_pin_assignment {J2_06} { LOCATION =  C5; }#     B31_P
+set_pin_assignment {J2_07} { LOCATION =  C7; }#B19_N
+set_pin_assignment {J2_08} { LOCATION =  B6; }#     B21_N
+set_pin_assignment {J2_09} { LOCATION =  A5; }#B20_P
+set_pin_assignment {J2_10} { LOCATION =  C9; }#     B10_N
+set_pin_assignment {J2_11} { LOCATION =  A6; }#B20_N
+set_pin_assignment {J2_12} { LOCATION = B10; }#     B10_P
+set_pin_assignment {J2_13} { LOCATION =  A8; }#B18_P
+#set_pin_assignment {J2_14} { LOCATION =  A9; }#    B11_N   GND
+set_pin_assignment {J2_15} { LOCATION =  A7; }#B18_N
+set_pin_assignment {J2_16} { LOCATION = A10; }#     B11_P
+set_pin_assignment {J2_17} { LOCATION =  B8; }#B16_N
+set_pin_assignment {J2_18} { LOCATION = B14;}#      B14_P
+set_pin_assignment {J2_19} { LOCATION =  C8; }#B16_P
+set_pin_assignment {J2_20} { LOCATION = A14; }#     B14_N
+set_pin_assignment {J2_21} { LOCATION = A12; }#B17_N
+set_pin_assignment {J2_22} { LOCATION = B15; }#     B15_P
+set_pin_assignment {J2_23} { LOCATION = A13; }#B17_P
+set_pin_assignment {J2_24} { LOCATION = B16;}#      B15_N
+set_pin_assignment {J2_25} { LOCATION = A11; }#B8_N
+set_pin_assignment {J2_26} { LOCATION = C16; }#     B13_p
+set_pin_assignment {J2_27} { LOCATION = C11; }#B8_P
+set_pin_assignment {J2_28} { LOCATION = C15;}#      B13_N
+set_pin_assignment {J2_29} { LOCATION = B12; }#B7_P
+set_pin_assignment {J2_30} { LOCATION = E16; }#     B1_P
+set_pin_assignment {J2_31} { LOCATION = C10; }#B7_N
+#set_pin_assignment {J2_32} { LOCATION = F16;}#      B1_N   GND
+set_pin_assignment {J2_33} { LOCATION = H13; }#L9_P zUART1_TX
+#set_pin_assignment {J2_34} { LOCATION = A15; }#     JTAG_TMS
+set_pin_assignment {J2_35} { LOCATION = J13; }#L9_N zUART2_TX
+#set_pin_assignment {J2_36} { LOCATION = C14; }#     JTAG_TCK
+set_pin_assignment {J2_37} { LOCATION = J11; }#L4_N zSPI2_MOSI SWCLK
+#set_pin_assignment {J2_38} { LOCATION = E14; }#     JTAG_TDO    //force Z
+set_pin_assignment {J2_39} { LOCATION = L12; }#L2_P zSPI2_MISO SWDAT
+#set_pin_assignment {J2_40} { LOCATION = C12; }#     JTAG_TDI
+
+
+#J3
+set_pin_assignment {J3_01} { LOCATION =  N3; }#R22_N
+set_pin_assignment {J3_02} { LOCATION =  P2; }#     R19_N   zTP_SCL
+set_pin_assignment {J3_03} { LOCATION =  M4; }#R22_P
+set_pin_assignment {J3_04} { LOCATION =  R2; }#     R19_P   zTP_SDA
+set_pin_assignment {J3_05} { LOCATION =  P4; }#R23_P
+set_pin_assignment {J3_06} { LOCATION =  N5; }#     T3_P
+set_pin_assignment {J3_07} { LOCATION =  N4; }#R23_N
+set_pin_assignment {J3_08} { LOCATION =  P5; }#     T3_N
+set_pin_assignment {J3_09} { LOCATION =  T5; }#T2_P
+set_pin_assignment {J3_10} { LOCATION =  T7; }#     T11_N
+set_pin_assignment {J3_11} { LOCATION =  T6; }#T2_N
+set_pin_assignment {J3_12} { LOCATION =  R7; }#     T11_P
+set_pin_assignment {J3_13} { LOCATION =  R5; }#T6_P
+#set_pin_assignment {J3_14} { LOCATION =  T8; }#     T12_N     GND
+set_pin_assignment {J3_15} { LOCATION =  P8; }#T6_N
+set_pin_assignment {J3_16} { LOCATION = M10; }#     T12_P
+set_pin_assignment {J3_17} { LOCATION =  R9; }#T8_P
+set_pin_assignment {J3_18} { LOCATION = P11; }#     T17_P zADC1
+set_pin_assignment {J3_19} { LOCATION =  P9; }#T8_N
+set_pin_assignment {J3_20} { LOCATION = L10; }#     T17_N zADC3
+set_pin_assignment {J3_21} { LOCATION = T13; }#T13_N
+set_pin_assignment {J3_22} { LOCATION = N11; }#           zADC2
+set_pin_assignment {J3_23} { LOCATION = T14; }#T13_P
+set_pin_assignment {J3_24} { LOCATION = P12; }#           zADC0
+set_pin_assignment {J3_25} { LOCATION = R12; }#T16_N
+set_pin_assignment {J3_26} { LOCATION = N12; }#     T18_N zADC6   M1
+set_pin_assignment {J3_27} { LOCATION = R14; }#T16_P
+set_pin_assignment {J3_28} { LOCATION = R16; }#     T18_P zADC5
+set_pin_assignment {J3_29} { LOCATION = T15; }#T15_N
+set_pin_assignment {J3_30} { LOCATION = M12; }#     T19_N zADC7
+set_pin_assignment {J3_31} { LOCATION = R15; }#T15_P
+#set_pin_assignment {J3_32} { LOCATION = M12; }#     T19_P zADC4     GND
+set_pin_assignment {J3_33} { LOCATION = L13; }#L5_P  zUART2_TX
+#set_pin_assignment {J3_34} { LOCATION = ; }#                   VB0
+set_pin_assignment {J3_35} { LOCATION = M13; }#L5_N  zUART2_RX
+#set_pin_assignment {J3_36} { LOCATION = ; }#                   3V3
+set_pin_assignment {J3_37} { LOCATION =  P7; }#T10_P zSPI_SCK
+#set_pin_assignment {J3_38} { LOCATION = ; }#                   5V
+set_pin_assignment {J3_39} { LOCATION = K11; }#L4_P  zSPI2_NSS
+#set_pin_assignment {J3_40} { LOCATION = ; }#                   GND
+
+# TF_CARD J6
+# FLASH NOR U3
+# FLASH NAND U4
+# touch sensor U8
+
+# DVP_CSI port
+#set_pin_assignment {zCSI_D[0]} { LOCATION = P15;}	##unuse	
+#set_pin_assignment {zCSI_D[1]} { LOCATION = P16;}	##unuse
+set_pin_assignment {zCSI_D[0]} { LOCATION = L16;}
+set_pin_assignment {zCSI_D[1]} { LOCATION = L14;}
+set_pin_assignment {zCSI_D[2]} { LOCATION = M14;}
+set_pin_assignment {zCSI_D[3]} { LOCATION = M16;}
+set_pin_assignment {zCSI_D[4]} { LOCATION = M15;}
+set_pin_assignment {zCSI_D[5]} { LOCATION = K15;}
+set_pin_assignment {zCSI_D[6]} { LOCATION = H16;}
+set_pin_assignment {zCSI_D[7]} { LOCATION = G16;}
+set_pin_assignment {zCSI_PCLK} { LOCATION = K12;}
+set_pin_assignment {zCSI_XCLK} { LOCATION = J12;}
+set_pin_assignment {zCSI_HREF} { LOCATION = H15;}
+set_pin_assignment {zCSI_VSYNC} { LOCATION = F15;}
+set_pin_assignment {zCSI_PWDN} { LOCATION = G14;}
+set_pin_assignment {zCSI_RST} { LOCATION = E15;}
+set_pin_assignment {zCSI_SOIC} { LOCATION = D16;}
+set_pin_assignment {zCSI_SOID} { LOCATION = D14;}
+
+#MiPi LCD
+set_pin_assignment {zLCD_R[0]} { LOCATION = B2;}
+set_pin_assignment {zLCD_R[1]} { LOCATION = A2;}
+set_pin_assignment {zLCD_R[2]} { LOCATION = C3;}
+set_pin_assignment {zLCD_R[3]} { LOCATION = C2;}
+set_pin_assignment {zLCD_R[4]} { LOCATION = C1;}
+set_pin_assignment {zLCD_R[5]} { LOCATION = E2;}
+set_pin_assignment {zLCD_R[6]} { LOCATION = D1;}
+set_pin_assignment {zLCD_R[7]} { LOCATION = E1;}
+set_pin_assignment {zLCD_G[0]} { LOCATION = E3;}
+set_pin_assignment {zLCD_G[1]} { LOCATION = E4;}
+set_pin_assignment {zLCD_G[2]} { LOCATION = F1;}
+set_pin_assignment {zLCD_G[3]} { LOCATION = F2;}
+set_pin_assignment {zLCD_G[4]} { LOCATION = G1;}
+set_pin_assignment {zLCD_G[5]} { LOCATION = G3;}
+set_pin_assignment {zLCD_G[6]} { LOCATION = J4;}
+set_pin_assignment {zLCD_G[7]} { LOCATION = J3;}
+set_pin_assignment {zLCD_B[0]} { LOCATION = J1;}
+set_pin_assignment {zLCD_B[1]} { LOCATION = K1;}
+set_pin_assignment {zLCD_B[2]} { LOCATION = K2;}
+set_pin_assignment {zLCD_B[3]} { LOCATION = K3;}
+set_pin_assignment {zLCD_B[4]} { LOCATION = L3;}
+set_pin_assignment {zLCD_B[5]} { LOCATION = M2;}
+set_pin_assignment {zLCD_B[6]} { LOCATION = M1;}
+set_pin_assignment {zLCD_B[7]} { LOCATION = N1;}
+set_pin_assignment {zLCD_CLK}  { LOCATION = L1;}
+set_pin_assignment {zLCD_HSYNC} { LOCATION = P1;}
+set_pin_assignment {zLCD_VSYNC} { LOCATION = R1;}
+set_pin_assignment {zLCD_DEN}  { LOCATION = L4;}
+set_pin_assignment {zLCD_PWM}  { LOCATION = J16;}
+
+
