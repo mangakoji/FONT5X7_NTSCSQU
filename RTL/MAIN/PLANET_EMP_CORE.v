@@ -104,9 +104,15 @@ module PLANET_EMP_CORE
         ) 
     ;
 
-    `a LEDs_ON_o[7:0] = MSL_qs[7:0] ;
-//     `a LEDs_ON_o[8] = MSL_qs[8] ;
-    `a LEDs_ON_o[9] = MSL_qs[9]  ;
+    `a LEDs_ON_o[0] = MSL_qs[9]  ;
+    `a LEDs_ON_o[1] = MSL_qs[0]  ;
+    `a LEDs_ON_o[2] = MSL_qs[1]  ;
+    `a LEDs_ON_o[3] = MSL_qs[2]  ;
+    `a LEDs_ON_o[4] = MSL_qs[3]  ;
+    `a LEDs_ON_o[5] = MSL_qs[4]  ;
+    `a LEDs_ON_o[6] = MSL_qs[5]  ;
+    `a LEDs_ON_o[7] = MSL_qs[6]  ;
+    `a LEDs_ON_o[8] = MSL_qs[7]  ;
 
     `lp C_SND_CTR_W = log2(C_SND_CK_HALF_N) ;
     `r[C_SND_CTR_W-1:0] SND_CTRs ;
@@ -159,15 +165,15 @@ module PLANET_EMP_CORE
             , .QQs_o        ( EMP_QQs[7:4]          )
         ) 
     ;
-    `a LEDs_ON_o[ 8] =   EMP_QQs[7]  ;
-    `a LEDs_ON_o[10] = ~ EMP_QQs[0] ;
-    `a LEDs_ON_o[11] = ~ EMP_QQs[1] ;
-    `a LEDs_ON_o[12] = ~ EMP_QQs[2] ;
-    `a LEDs_ON_o[13] = ~ EMP_QQs[3] ;
-    `a LEDs_ON_o[14] = ~ EMP_QQs[4] ;
-    `a LEDs_ON_o[15] = ~ EMP_QQs[5] ;
-    `a LEDs_ON_o[16] = ~ EMP_QQs[6] ;
-    `a LEDs_ON_o[17] = ~ EMP_QQs[7] ;
+    `a LEDs_ON_o[ 9] =   EMP_QQs[7]  ;
+    `a LEDs_ON_o[10] = ~ EMP_QQs[7] ;
+    `a LEDs_ON_o[11] = ~ EMP_QQs[4] ;
+    `a LEDs_ON_o[12] = ~ EMP_QQs[5] ;
+    `a LEDs_ON_o[13] = ~ EMP_QQs[6] ;
+    `a LEDs_ON_o[14] = ~ EMP_QQs[3] ;
+    `a LEDs_ON_o[15] = ~ EMP_QQs[0] ;
+    `a LEDs_ON_o[16] = ~ EMP_QQs[1] ;
+    `a LEDs_ON_o[17] = ~ EMP_QQs[2] ;
 endmodule
 
 
