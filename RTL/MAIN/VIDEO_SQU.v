@@ -123,7 +123,7 @@ module VIDEO_SQU
     `a VIDEOs_a = 
         ( LED_HIT)
         ?
-            (  9 + C_PEDE)
+            ( 10 + C_PEDE)
             + $signed
             ( 
                 ( LED_COLOR_ON )

@@ -27,10 +27,14 @@ module PLANET_EMP_CORE
     `e `efunc
 
     `lp C_F_PDIV_CK     = (C_DBG_ACC)? C_F_CK/4 : 1_000_000 ;
+    `lp C_1SEC_N        = (C_DBG_ACC)? 100_000  : 1_000_000 ;
     `lp C_STOP_N        = (C_DBG_ACC)? 366_000  : 36_600_000 ; //33e6 us
     `lp C_MSL_CK_HALF_N = (C_DBG_ACC)?   1_500  :    150_000 ;
     `lp C_SND_CK_HALF_N = (C_DBG_ACC)?       4  :        150 ;
     `lp C_EMP_CK_N      = (C_DBG_ACC)?   3_000  :     300_000 ;
+
+    
+
 
     // mastar prescaler
     `lp C_PDIV_N = C_F_CK / C_F_PDIV_CK ;
@@ -46,10 +50,30 @@ module PLANET_EMP_CORE
                 EE          <= PDIV_CTR_cy ;
     `e
 
+    // resetter
+    // if push psw over 1sec , reset the game system
+    `lp C_RST_CTR_W = log2( C_1SEC_N ) ;
+    `r[C_RST_CTR_W-1:0] RST_CTRs ;
+    `w RST_CTR_cy = &(RST_CTRs | ~(C_1SEC_N-1)) ;
+    `r RST ;
+    `ack `xar
+    `b  RST_CTRs <= 1'b0 ;
+        RST <= 1'b0 ;
+    `e `elif( EE )
+    `b  if( XPSW_i )
+            RST_CTRs <= 0 ;
+        `elif( ~RST_CTR_cy )
+            RST_CTRs <= RST_CTRs + 1 ;
+        RST <= RST_CTR_cy ;
+    `e
+
     `lp C_STOP_W = log2( C_STOP_N) ;
     `r [C_STOP_W-1:0] STOP_CTRs ;
     `w x_STOP_CTR_cy = &(STOP_CTRs| ~(C_STOP_N-1)) ;
-    `ack `xar   STOP_CTRs <= 1'b0 ;
+    `ack `xar   
+        STOP_CTRs <= 1'b0 ;
+    `elif( RST )
+        STOP_CTRs <=  0 ;
     `elif( EE )
         if( ~ x_STOP_CTR_cy )  
                 STOP_CTRs <= STOP_CTRs + 1 ;
@@ -61,6 +85,9 @@ module PLANET_EMP_CORE
     `ack `xar
     `b          MSL_CK_CTRs <= 0 ;
                 MSL_XCK <= 1'b0 ;
+    `e `elif( RST )
+    `b          MSL_CK_CTRs <= 0 ;
+                MSL_XCK <= 1'b0 ;
     `e `elif(EE & ~ x_STOP_CTR_cy )
     `b          MSL_CK_CTRs <= (MSL_CK_CTR_cy)? 0 : (MSL_CK_CTRs + 1) ;
                 if(MSL_CK_CTR_cy) 
@@ -69,7 +96,7 @@ module PLANET_EMP_CORE
     `w MSL_ck = ~ MSL_XCK ;
     `w [9:0] MSL_qs ;
     MC14017
-        Q1(   .ARST_i       ( ~XARST_i | ~XPSW_i & MSL_qs[9]   )
+        Q1(   .ARST_i       ( ~XARST_i | (~XPSW_i & MSL_qs[9])  | RST )
             , .CK_i         ( MSL_ck            )
             , .XEN_XCK_i    ( MSL_qs[9]             )
             , .qs_o         ( MSL_qs                )
@@ -88,6 +115,9 @@ module PLANET_EMP_CORE
     `ack `xar
     `b          SND <= 1'b0 ;
                 SND_CTRs <= 0 ;
+    `e `elif( RST )
+    `b          SND <= 1'b0 ;
+                SND_CTRs <= 0 ;
     `e `elif( EE )
         if(MSL_ck & ~MSL_qs[9])
         `b      SND_CTRs <= (SND_CTR_cy)? 0 :(SND_CTRs+1) ;
@@ -102,6 +132,9 @@ module PLANET_EMP_CORE
     `ack `xar 
     `b          EMP_CTRs <= 0 ;
                 EMP_CK <= 1'b0 ;
+    `e `elif( RST )
+    `b          EMP_CTRs <= 0 ;
+                EMP_CK <= 1'b0 ;
     `e `elif( EE )
     `b          EMP_CTRs <= EMP_CTR_cy ? 0 : (EMP_CTRs+1) ;
                 if(EMP_CTR_cy)
@@ -112,7 +145,7 @@ module PLANET_EMP_CORE
         Q2_A
         (   
               .CK_i         ( EMP_CK                )
-            , .ARST_i       ( ~XARST_i              )
+            , .ARST_i       ( ~XARST_i  | RST       )
             , .DAT_i        ( EMP_QQs[7] | MSL_qs[8])
             , .QQs_o        ( EMP_QQs[3:0]          )
         ) 
@@ -120,10 +153,10 @@ module PLANET_EMP_CORE
     MC14015
         Q2_B
         (     
-              .CK_i         ( EMP_CK        )
-            , .ARST_i       ( ~XARST_i      )
-            , .DAT_i        ( EMP_QQs[3]    )
-            , .QQs_o        ( EMP_QQs[7:4]  )
+              .CK_i         ( EMP_CK                )
+            , .ARST_i       ( ~XARST_i | RST        )
+            , .DAT_i        ( EMP_QQs[3]            )
+            , .QQs_o        ( EMP_QQs[7:4]          )
         ) 
     ;
     `a LEDs_ON_o[ 8] =   EMP_QQs[7]  ;
@@ -237,8 +270,9 @@ module TB_PLANET_EMP_CORE
         XPSW_i <= 1'b1 ;
         repeat(100)@(`pe CK_i) ;
         for(kk=0;kk<(2**0);kk=kk+1)
-        `b  for(jj=0;jj<(2**0);jj=jj+1)
-            `b  for(ii=0;ii<(2**24);ii=ii+1)
+        `b  for(jj=0;jj<(3);jj=jj+1)
+            XPSW_i <= jj[0] ;
+            `b  for(ii=0;ii<(2**20);ii=ii+1)
                 `b  
                     @(`pe CK_i) ;
         `e  `e  `e

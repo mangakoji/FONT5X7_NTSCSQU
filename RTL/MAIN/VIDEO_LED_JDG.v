@@ -29,8 +29,8 @@ module VIDEO_LED_JDG
             ,{24'h0A8_128} //LED01
             ,{24'h0C8_138} //LED00
         }
-    , `p C_LEDs_COLOR_ON = 18'b0111_1111_1_1_1111_1111
-    , `p C_LEDs_COLORs   = 72'h1076_5432_1_0_7654_3210
+    , `p C_LEDs_COLOR_ON = 18'b1111_1111_1_1_1111_1111
+    , `p C_LEDs_COLORs   = 72'h2222_2222_2_3_2222_2222
 )(
       `in `tri1             CK_i
     , `in `tri1             XARST_i
