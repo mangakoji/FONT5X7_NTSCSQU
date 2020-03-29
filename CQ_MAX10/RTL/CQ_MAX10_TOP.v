@@ -7,7 +7,7 @@
 //  IA : ULTRA_SONIC try1
 
 `default_nettype none
-`include "./MISC/define.vh"
+`include "../RTL/MISC/define.vh"
 `ifndef FPGA_COMPILE
     `include "PLANET_EMP_TOP.v"
 `endif

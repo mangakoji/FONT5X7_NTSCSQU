@@ -1,4 +1,0 @@
-// TIMESTAMP.v
-// Sun Mar 29 21:25:01 JST 2020
-// 5E80939D
-parameter [31:0] C_TIMESTAMP = 32'h5E80939D ;
