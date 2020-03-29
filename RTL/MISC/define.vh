@@ -31,4 +31,5 @@
     `define init initial
     `define al always
     `define elif else if
-    `define elsif else if
+//    `define elsif else if //alrady used ,who? where
+    `define emodule endmodule

@@ -7,6 +7,7 @@
 //  IA : ULTRA_SONIC try1
 
 `include "MAIN/VIDEO_SQU.v"
+`include "MAIN/PLANET_EMP_CORE.v"
 `default_nettype none
 module CQ_MAX10_TOP
 #(
@@ -133,26 +134,25 @@ module CQ_MAX10_TOP
         `e
     
 
-    wire[5:0]   VIDEOs ;
-    `w  HVcy ;
-    
-    `r[3:0] FCTRs ;
-    `r [17:0] LEDs_ON ;
-    `ack
-        `xar
-        `b
-            FCTRs <= 0 ;
-            LEDs_ON <= 0 ;
-        `e else
-        `b
-            if( HVcy )
-            `b
-                FCTRs <= FCTRs + 1 ;
-                if( &FCTRs )
-                    LEDs_ON <= {LEDs_ON , ~LEDs_ON[17]} ;
-            `e
-        `e
 
+
+
+    `w[5 :0]    VIDEOs  ;
+    `w[17:0]    LEDs_ON ;
+    `w          SOUND_o ;
+    PLANET_EMP_CORE
+        #(
+             .C_F_CK    (  C_F_CK       )
+        )PLANET_EMP_CORE
+        (
+              .CK_i     ( CK_i          )      //8*12.27272MHz
+            , .XARST_i  ( XARST_i       )
+            , .XPSW_i   ( XPSW_i        )
+            , .LEDs_ON_o( LEDs_ON       )
+            , .SOUND_o  ( SOUND_o       )
+        ) 
+    ;
+    `w HVcy ;
     VIDEO_SQU
 //        #(
 //              .C_XCBURST_SHUF     ( 1'b1 )
@@ -194,12 +194,13 @@ module CQ_MAX10_TOP
         (BJ_DBGs[22]) ?
             C_TIMESTAMP
         :
-            {FCTRs,LEDs_ON} 
+            {LEDs_ON} 
     ;
 
 //    assign P41 = DAC_DONE_o ;
-    assign P43 = VIDEO_o ;
-    assign P44 = 1'b0 ;
+    assign P14 = VIDEO_o ;
+    assign P43 =   SOUND_o ;
+    assign P44 = ~ SOUND_o ;
     assign XLED_R_o         = ~ BJ_DBGs[ 23 ] ;
     assign XLED_G_o         = ~ BJ_DBGs[ 23 ] ;
     assign XLED_B_o         = ~ BJ_DBGs[ 23 ] ;
