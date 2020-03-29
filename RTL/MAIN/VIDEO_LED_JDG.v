@@ -32,15 +32,15 @@ module VIDEO_LED_JDG
     , `p C_LEDs_COLOR_ON = 18'b0111_1111_1_1_1111_1111
     , `p C_LEDs_COLORs   = 72'h1076_5432_1_0_7654_3210
 )(
-      `in `w            CK_i
-    , `in `w            XARST_i
-    , `in `w            CK_EE_i
-    , `in`w[C_LED_N-1:0]    LEDs_ON_i
-    , `in `w[8:0]       HCTRs_i //0-319-787/2
-    , `in `w[7:0]       VCTRs_i //0-239-242
-    , `out `w           LED_HIT_o
-    , `out `w           LED_COLOR_ON_o
-    , `out `w[2:0]      LED_COLOR_PHs_o
+      `in `tri1             CK_i
+    , `in `tri1             XARST_i
+    , `in `tri1             CK_EE_i
+    , `in `tri0[C_LED_N-1:0]LEDs_ON_i
+    , `in `tri0[8:0]        HCTRs_i //0-319-787/2
+    , `in `tri0[7:0]        VCTRs_i //0-239-242
+    , `out `w               LED_HIT_o
+    , `out `w               LED_COLOR_ON_o
+    , `out `w[2:0]          LED_COLOR_PHs_o
 ) ;
     `func `int log2;
         `in `int value ;

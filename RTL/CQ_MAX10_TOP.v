@@ -6,9 +6,11 @@
 //J14g
 //  IA : ULTRA_SONIC try1
 
-`include "MAIN/VIDEO_SQU.v"
-`include "MAIN/PLANET_EMP_CORE.v"
 `default_nettype none
+`include "./MISC/define.vh"
+`ifndef FPGA_COMPILE
+    `include "PLANET_EMP_TOP.v"
+`endif
 module CQ_MAX10_TOP
 #(
     parameter C_F_MCK = 48_000_000
@@ -119,66 +121,23 @@ module CQ_MAX10_TOP
     assign XARST = PLL_LOCKED_Ds[1] ;
     wire CK_i = CK ;
     wire XARST_i = XARST ;
-    `r CK_EE ;
-    `r[3:0] PCTRs ;
-    `ack
-        `xar
-            {CK_EE , PCTRs} <= 0 ;
-        else
-        `b
-            CK_EE <= & {~PCTRs} ;
-            if(PCTRs==10)
-                PCTRs <= 0 ;
-            else
-                PCTRs <= PCTRs + 1 ;
-        `e
-    
 
 
-
-
-    `w[5 :0]    VIDEOs  ;
-    `w[17:0]    LEDs_ON ;
-    `w          SOUND_o ;
-    PLANET_EMP_CORE
-        #(
-             .C_F_CK    (  C_F_CK       )
-        )PLANET_EMP_CORE
+    `w VIDEO_o ;
+    `w SOUND_o ;
+    `w [17:0]LEDs_ON_o ;
+    PLANET_EMP_TOP
+        #(      .C_F_CK     ( C_F_CK    )
+        ) PLANET_EMP_TOP
         (
-              .CK_i     ( CK_i          )      //8*12.27272MHz
-            , .XARST_i  ( XARST_i       )
-            , .XPSW_i   ( XPSW_i        )
-            , .LEDs_ON_o( LEDs_ON       )
-            , .SOUND_o  ( SOUND_o       )
-        ) 
-    ;
-    `w HVcy ;
-    VIDEO_SQU
-//        #(
-//              .C_XCBURST_SHUF     ( 1'b1 )
-//        )
-        VIDEO_SQU
-        (
-              .CK_i         ( CK_i      )      //8*12.27272MHz
+              .CK_i         ( CK_i      )
             , .XARST_i      ( XARST_i   )
-            , .CK_EE_i      ( CK_EE     )        //12.27272MHz
-//            , .RST_i        ()
-            , .LEDs_ON_i    ( LEDs_ON   )
-            , .HVcy_o       ( HVcy      )
-            , .VIDEOs_o     ( VIDEOs    )
-        )
+            , .XPSW_i       ( XPSW_i    )
+            , .VIDEO_o      ( VIDEO_o   )
+            , .SOUND_o      ( SOUND_o   )
+            , .LEDs_ON_o    ( LEDs_ON_o )
+        )                    
     ;
-    `r      VIDEO ;
-    `r[6:0] VIDEO_DSs ;
-    `ack
-        `xar
-            VIDEO_DSs <= 0 ;
-        else
-            if( VIDEOs==0)
-                VIDEO_DSs <= 0 ;
-            else
-                VIDEO_DSs <= {1'b0 , VIDEO_DSs[5:0]} + {1'b0,VIDEOs}; 
-    `w VIDEO_o = VIDEO_DSs[6] ;
 
     
     wire [63:0] BJO_DBGOs ;
@@ -194,7 +153,7 @@ module CQ_MAX10_TOP
         (BJ_DBGs[22]) ?
             C_TIMESTAMP
         :
-            {LEDs_ON} 
+            {LEDs_ON_o} 
     ;
 
 //    assign P41 = DAC_DONE_o ;

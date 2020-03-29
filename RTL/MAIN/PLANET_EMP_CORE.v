@@ -1,7 +1,8 @@
-//
+// PLANET_EMP_CORE.v
 //
 // ゲーム!惑星帝国 (as GAME! Planet Empire.)
 // 大人の工作読本 2004年 No.6 再掲載
+
 `default_nettype none
 `include "../MISC/define.vh"
 module PLANET_EMP_CORE
@@ -10,9 +11,9 @@ module PLANET_EMP_CORE
     , `p C_DBG_ACC = 0 
     , `p C_LED_N = 18
 )(    
-      `in tri1  CK_i
-    , `in tri1  XARST_i
-    , `in tri0  XPSW_i
+      `in `tri1             CK_i
+    , `in `tri1             XARST_i
+    , `in `tri0             XPSW_i
     , `out `w[C_LED_N-1:0] LEDs_ON_o
     , `out `w              SOUND_o
 ) ;

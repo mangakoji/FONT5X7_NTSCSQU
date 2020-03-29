@@ -187,16 +187,16 @@ set_location_assignment PIN_18 -to altera_reserved_tck
 set_location_assignment PIN_19 -to altera_reserved_tdi
 set_location_assignment PIN_20 -to altera_reserved_tdo
 set_location_assignment PIN_16 -to altera_reserved_tms
-set_global_assignment -name SDC_FILE constraint/CQ_MAX10_TOP.sdc
-set_global_assignment -name VERILOG_FILE RTL/CQ_MAX10_TOP.v
-set_global_assignment -name VERILOG_FILE IP/JTAG_DBGER/JTAG_DBGER/synthesis/JTAG_DBGER.v
-set_global_assignment -name QSYS_FILE IP/JTAG_DBGER/JTAG_DBGER.qsys
-set_global_assignment -name QIP_FILE IP/PLL/PLL.qip
-set_global_assignment -name SOURCE_FILE output_files/Spf1.spf
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to P57
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to P59
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to P38
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to P39
 set_instance_assignment -name IO_STANDARD "3.3 V SCHMITT TRIGGER" -to P57
 set_instance_assignment -name IO_STANDARD "3.3 V SCHMITT TRIGGER" -to P59
+set_global_assignment -name VERILOG_FILE RTL/include.v
+set_global_assignment -name SDC_FILE constraint/CQ_MAX10_TOP.sdc
+set_global_assignment -name VERILOG_FILE IP/JTAG_DBGER/JTAG_DBGER/synthesis/JTAG_DBGER.v
+set_global_assignment -name QSYS_FILE IP/JTAG_DBGER/JTAG_DBGER.qsys
+set_global_assignment -name QIP_FILE IP/PLL/PLL.qip
+set_global_assignment -name SOURCE_FILE output_files/Spf1.spf
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

@@ -33,3 +33,11 @@
     `define elif else if
 //    `define elsif else if //alrady used ,who? where
     `define emodule endmodule
+    `ifdef TAN_FPGA
+        `define tri0 wire
+        `define tri1 wire
+    `else
+        `define tri0 tri0
+        `define tri1 tri1
+    `endif
+    

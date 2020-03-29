@@ -5,22 +5,24 @@
 // non interace ,59.94FPS 263line system
 //
 //K38u :1st
-`include "../MISC/define.vh"
-`include "./VIDEO_LED_JDG.v"
-`include "./VIDEO_SQU_TG.v"
 `default_nettype none
+`include "../MISC/define.vh"
+`ifndef FPGA_COMPILE
+    `include "./VIDEO_LED_JDG.v"
+    `include "./VIDEO_SQU_TG.v"
+`endif
 module VIDEO_SQU
 #(
     `p C_XCBURST_SHUF     = 1'b0 
 )(
-      `in tri1      CK_i           //12.27272MHz
-    , `in tri1      XARST_i
-    , `in tri1      CK_EE_i        //12.27272MHz
-    , `in tri0      RST_i
-    , `in tri0[17:0] LEDs_ON_i
-    , `out `w[5:0] VIDEOs_o
-    , `out `w       HVcy_o
-//    , `out `w       VIDEO_o
+      `in `tri1         CK_i           //12.27272MHz
+    , `in `tri1         XARST_i
+    , `in `tri1         CK_EE_i        //12.27272MHz
+    , `in `tri0         RST_i
+    , `in `tri0[17:0]   LEDs_ON_i
+    , `out `w[5:0]      VIDEOs_o
+    , `out `w           HVcy_o
+//    , `out `w         VIDEO_o
 );
 
     `w [9:0] HCTRs      ;

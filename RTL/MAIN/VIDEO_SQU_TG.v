@@ -4,18 +4,18 @@
 //
 // non interace ,59.94FPS 263line system
 //K31u :1st
-`include "../MISC/define.vh"
 `default_nettype none
+`include "../MISC/define.vh"
 module VIDEO_SQU_TG
 #(
       `p C_PX_DLY           = 2
     , `p C_CBURST_DLY_N     = 2
     , `p C_XCBURST_SHUF     = 1'b0 
 )(
-      `in tri1      CK_i           //12.27272MHz
-    , `in tri1      XARST_i
-    , `in tri1      CK_EE_i        //12.27272MHz
-    , `in tri0      RST_i
+      `in `tri1      CK_i           //12.27272MHz
+    , `in `tri1      XARST_i
+    , `in `tri1      CK_EE_i        //12.27272MHz
+    , `in `tri0      RST_i
     , `out `w[9:0]  HCTRs_o
     , `out `w[8:0]  VCTRs_o
     , `out `w[7:0]  FCTRs_o
