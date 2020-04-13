@@ -33,22 +33,9 @@ module PLANET_EMP_CORE
     `lp C_SND_CK_HALF_N = (C_DBG_ACC)?       4  :        150 ;
     `lp C_EMP_CK_N      = (C_DBG_ACC)?   3_000  :     300_000 ;
 
-    
-
 
     // mastar prescaler
     `lp C_PDIV_N = C_F_CK / C_F_PDIV_CK ;
-//    `lp C_PDIV_W = log2( C_PDIV_N ) ;
-//    `r[C_PDIV_W-1:0] PDIV_CTRs ;
-//    `w PDIV_CTR_cy = &(PDIV_CTRs | ~(C_PDIV_N-1)) ;
-//    `r EE ;
-//    `ack `xar
-//    `b          PDIV_CTRs <= 0 ;
-//                EE          <= 1'b0 ;
-//    `e else
-//    `b          PDIV_CTRs <= (PDIV_CTR_cy)? 0 :(PDIV_CTRs + 1) ;
-//                EE          <= PDIV_CTR_cy ;
-//    `e
     `w QEE ;
     `w EE ;
     RC_DLY
@@ -66,20 +53,6 @@ module PLANET_EMP_CORE
 
     // resetter
     // if push psw over 1sec , reset the game system
-//    `lp C_RST_CTR_W = log2( C_1SEC_N ) ;
-//    `r[C_RST_CTR_W-1:0] RST_CTRs ;
-//    `w RST_CTR_cy = &(RST_CTRs | ~(C_1SEC_N-1)) ;
-//    `r RST ;
-//    `ack `xar
-//    `b  RST_CTRs <= 1'b0 ;
-//        RST <= 1'b0 ;
-//    `e `elif( EE )
-//    `b  if( XPSW_i )
-//            RST_CTRs <= 0 ;
-//        `elif( ~RST_CTR_cy )
-//            RST_CTRs <= RST_CTRs + 1 ;
-//        RST <= RST_CTR_cy ;
-//    `e
     `w RST ;
     RC_DLY
         #( .C_WAIT_N    ( C_1SEC_N  )
@@ -87,24 +60,14 @@ module PLANET_EMP_CORE
               .CK_i     ( CK_i          )
             , .XARST_i  ( XARST_i       )
             , .CK_EE_i  ( EE            ) //1us 
-            , .DAT_i    ( XPSW_i        )
+            , .DAT_i    ( ~ XPSW_i      )
             , .QQ_o     ( RST           )
 //            , .CYD_o    ( cy_o          )
         ) 
     ;
+    `w rst = RST & ~XPSW_i ;
 
 
-
-//    `lp C_STOP_W = log2( C_STOP_N) ;
-//    `r [C_STOP_W-1:0] STOP_CTRs ;
-//    `w x_STOP_CTR_cy = &(STOP_CTRs| ~(C_STOP_N-1)) ;
-//    `ack `xar   
-//        STOP_CTRs <= 1'b0 ;
-//    `elif( RST )
-//        STOP_CTRs <=  0 ;
-//    `elif( EE )
-//        if( ~ x_STOP_CTR_cy )  
-//                STOP_CTRs <= STOP_CTRs + 1 ;
 
     `w STOP ;
     RC_DLY
@@ -113,30 +76,13 @@ module PLANET_EMP_CORE
         (     .CK_i     ( CK_i      )
             , .XARST_i  ( XARST_i   )
             , .CK_EE_i  ( EE        ) //1us 
-            , .DAT_i    ( ~ RST     )
+            , .DAT_i    ( ~ rst     )
             , .QQ_o     ( STOP      )
 //            , .CYD_o    ( )
         ) 
     ;
+    `w stop = stop & rst ;
 
-
-
-//    `lp C_MSL_CK_CTR_W = log2( C_MSL_CK_HALF_N ) ;
-//    `r MSL_XCK ;
-//    `r[C_MSL_CK_CTR_W-1:0] MSL_CK_CTRs ;
-//    `w MSL_CK_CTR_cy = &(MSL_CK_CTRs | ~ (C_MSL_CK_HALF_N-1)) ;
-//    `ack `xar
-//    `b          MSL_CK_CTRs <= 0 ;
-//                MSL_XCK <= 1'b0 ;
-//    `e `elif( RST )
-//    `b          MSL_CK_CTRs <= 0 ;
-//                MSL_XCK <= 1'b0 ;
-//    `e `elif(EE & ~ x_STOP_CTR_cy )
-//    `b          MSL_CK_CTRs <= (MSL_CK_CTR_cy)? 0 : (MSL_CK_CTRs + 1) ;
-//                if(MSL_CK_CTR_cy) 
-//                    MSL_XCK <= ~ MSL_XCK ;
-//    `e
-//    `w MSL_ck = ~ MSL_XCK ;
 
     `w MSL_XCK ;
     RC_DLY
@@ -145,8 +91,8 @@ module PLANET_EMP_CORE
         (
               .CK_i     ( CK_i          )
             , .XARST_i  ( XARST_i       )
-            , .RST_i    ( RST           )
-            , .CK_EE_i  ( EE  & ~STOP   ) //1us 
+            , .RST_i    ( rst           )
+            , .CK_EE_i  ( EE  & ~stop   ) //1us 
             , .DAT_i    ( ~ MSL_XCK     )
             , .QQ_o     ( MSL_XCK       )
 //            , .CYD_o    ()
@@ -156,7 +102,7 @@ module PLANET_EMP_CORE
 
     `w [9:0] MSL_qs ;
     MC14017
-        IC1(  .ARST_i       ( ~XARST_i | (~XPSW_i & MSL_qs[9])  | RST )
+        IC1(  .ARST_i       ( ~XARST_i | (~XPSW_i & MSL_qs[9])  | rst )
             , .CK_i         ( MSL_ck            )
             , .XEN_XCK_i    ( MSL_qs[9]             )
             , .qs_o         ( MSL_qs                )
@@ -174,29 +120,13 @@ module PLANET_EMP_CORE
     `a LEDs_ON_o[7] = MSL_qs[6]  ;
     `a LEDs_ON_o[8] = MSL_qs[7]  ;
 
-//    `lp C_SND_CTR_W = log2(C_SND_CK_HALF_N) ;
-//    `r[C_SND_CTR_W-1:0] SND_CTRs ;
-//    `w SND_CTR_cy = &(SND_CTRs | ~ (C_SND_CK_HALF_N-1)) ;
-//    `r SND ;
-//    `ack `xar
-//    `b          SND <= 1'b0 ;
-//                SND_CTRs <= 0 ;
-//    `e `elif( RST )
-//    `b          SND <= 1'b0 ;
-//                SND_CTRs <= 0 ;
-//    `e `elif( EE )
-//        if(MSL_ck & ~MSL_qs[9])
-//        `b      SND_CTRs <= (SND_CTR_cy)? 0 :(SND_CTRs+1) ;
-//                if(SND_CTR_cy)  SND <= ~SND ;
-//        `e
-//    `a SOUND_o = SND ;
     `w SND ;
     RC_DLY
         #( .C_WAIT_N    ( C_SND_CK_HALF_N   )
         ) RC_DLY_SND_CTR 
         (     .CK_i     ( CK_i              )
             , .XARST_i  ( XARST_i           )
-            , .RST_i    ( RST               )
+            , .RST_i    ( rst               )
             , .CK_EE_i  ( EE                ) //1us 
             , .DAT_i    ( ~ SND  & MSL_ck & ~MSL_qs[9])
             , .QQ_o     ( SND               )
@@ -205,28 +135,13 @@ module PLANET_EMP_CORE
     ;
     `a SOUND_o = SND ;
 
-//    `lp C_EMP_CTR_W = log2(C_EMP_CK_N) ;
-//    `r[C_EMP_CTR_W-1:0] EMP_CTRs ;
-//    `w EMP_CTR_cy = &(EMP_CTRs | ~(C_EMP_CK_N-1)) ;
-//    `r EMP_CK ;
-//    `ack `xar 
-//    `b          EMP_CTRs <= 0 ;
-//                EMP_CK <= 1'b0 ;
-//    `e `elif( RST )
-//    `b          EMP_CTRs <= 0 ;
-//                EMP_CK <= 1'b0 ;
-//    `e `elif( EE )
-//    `b          EMP_CTRs <= EMP_CTR_cy ? 0 : (EMP_CTRs+1) ;
-//                if(EMP_CTR_cy)
-//                    EMP_CK <= ~ EMP_CK ;
-//    `e
     `w EMP_CK ;
     RC_DLY
         #( .C_WAIT_N    ( C_EMP_CK_N ) //??
         ) RC_DLY_EMP_CK_CTR (
               .CK_i     ( CK_i      )
             , .XARST_i  ( XARST_i   )
-            , .RST_i    ( RST       )
+            , .RST_i    ( rst       )
             , .CK_EE_i  ( EE        ) //1us 
             , .DAT_i    ( ~ EMP_CK )
             , .QQ_o     ( EMP_CK   )
@@ -240,7 +155,7 @@ module PLANET_EMP_CORE
         IC2_A
         (   
               .CK_i         ( EMP_CK                )
-            , .ARST_i       ( ~XARST_i  | RST       )
+            , .ARST_i       ( ~XARST_i  | rst       )
             , .DAT_i        ( EMP_QQs[7] | MSL_qs[8])
             , .QQs_o        ( EMP_QQs[3:0]          )
         ) 
@@ -249,7 +164,7 @@ module PLANET_EMP_CORE
         IC2_B
         (     
               .CK_i         ( EMP_CK                )
-            , .ARST_i       ( ~XARST_i | RST        )
+            , .ARST_i       ( ~XARST_i | rst        )
             , .DAT_i        ( EMP_QQs[3]            )
             , .QQs_o        ( EMP_QQs[7:4]          )
         ) 
