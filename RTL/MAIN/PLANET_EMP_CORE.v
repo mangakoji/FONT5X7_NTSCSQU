@@ -38,69 +38,129 @@ module PLANET_EMP_CORE
 
     // mastar prescaler
     `lp C_PDIV_N = C_F_CK / C_F_PDIV_CK ;
-    `lp C_PDIV_W = log2( C_PDIV_N ) ;
-    `r[C_PDIV_W-1:0] PDIV_CTRs ;
-    `w PDIV_CTR_cy = &(PDIV_CTRs | ~(C_PDIV_N-1)) ;
-    `r EE ;
-    `ack `xar
-    `b          PDIV_CTRs <= 0 ;
-                EE          <= 1'b0 ;
-    `e else
-    `b          PDIV_CTRs <= (PDIV_CTR_cy)? 0 :(PDIV_CTRs + 1) ;
-                EE          <= PDIV_CTR_cy ;
-    `e
+//    `lp C_PDIV_W = log2( C_PDIV_N ) ;
+//    `r[C_PDIV_W-1:0] PDIV_CTRs ;
+//    `w PDIV_CTR_cy = &(PDIV_CTRs | ~(C_PDIV_N-1)) ;
+//    `r EE ;
+//    `ack `xar
+//    `b          PDIV_CTRs <= 0 ;
+//                EE          <= 1'b0 ;
+//    `e else
+//    `b          PDIV_CTRs <= (PDIV_CTR_cy)? 0 :(PDIV_CTRs + 1) ;
+//                EE          <= PDIV_CTR_cy ;
+//    `e
+    `w QEE ;
+    `w EE ;
+    RC_DLY
+        #( .C_WAIT_N    ( C_PDIV_N ) //??
+        ) RC_DLY_CK (
+              .CK_i     ( CK_i      )
+            , .XARST_i  ( XARST_i   )
+            , .CK_EE_i  ( 1'b1      ) //1us 
+            , .DAT_i    ( ~ QEE     )
+            , .QQ_o     ( QEE       ) //not clock signal
+            , .CYD_o    ( EE        )
+        ) 
+    ;
+
 
     // resetter
     // if push psw over 1sec , reset the game system
-    `lp C_RST_CTR_W = log2( C_1SEC_N ) ;
-    `r[C_RST_CTR_W-1:0] RST_CTRs ;
-    `w RST_CTR_cy = &(RST_CTRs | ~(C_1SEC_N-1)) ;
-    `r RST ;
-    `ack `xar
-    `b  RST_CTRs <= 1'b0 ;
-        RST <= 1'b0 ;
-    `e `elif( EE )
-    `b  if( XPSW_i )
-            RST_CTRs <= 0 ;
-        `elif( ~RST_CTR_cy )
-            RST_CTRs <= RST_CTRs + 1 ;
-        RST <= RST_CTR_cy ;
-    `e
+//    `lp C_RST_CTR_W = log2( C_1SEC_N ) ;
+//    `r[C_RST_CTR_W-1:0] RST_CTRs ;
+//    `w RST_CTR_cy = &(RST_CTRs | ~(C_1SEC_N-1)) ;
+//    `r RST ;
+//    `ack `xar
+//    `b  RST_CTRs <= 1'b0 ;
+//        RST <= 1'b0 ;
+//    `e `elif( EE )
+//    `b  if( XPSW_i )
+//            RST_CTRs <= 0 ;
+//        `elif( ~RST_CTR_cy )
+//            RST_CTRs <= RST_CTRs + 1 ;
+//        RST <= RST_CTR_cy ;
+//    `e
+    `w RST ;
+    RC_DLY
+        #( .C_WAIT_N    ( C_1SEC_N  )
+        ) RC_DLY_RST(
+              .CK_i     ( CK_i          )
+            , .XARST_i  ( XARST_i       )
+            , .CK_EE_i  ( EE            ) //1us 
+            , .DAT_i    ( XPSW_i        )
+            , .QQ_o     ( RST           )
+//            , .CYD_o    ( cy_o          )
+        ) 
+    ;
 
-    `lp C_STOP_W = log2( C_STOP_N) ;
-    `r [C_STOP_W-1:0] STOP_CTRs ;
-    `w x_STOP_CTR_cy = &(STOP_CTRs| ~(C_STOP_N-1)) ;
-    `ack `xar   
-        STOP_CTRs <= 1'b0 ;
-    `elif( RST )
-        STOP_CTRs <=  0 ;
-    `elif( EE )
-        if( ~ x_STOP_CTR_cy )  
-                STOP_CTRs <= STOP_CTRs + 1 ;
 
-    `lp C_MSL_CK_CTR_W = log2( C_MSL_CK_HALF_N ) ;
-    `r MSL_XCK ;
-    `r[C_MSL_CK_CTR_W-1:0] MSL_CK_CTRs ;
-    `w MSL_CK_CTR_cy = &(MSL_CK_CTRs | ~ (C_MSL_CK_HALF_N-1)) ;
-    `ack `xar
-    `b          MSL_CK_CTRs <= 0 ;
-                MSL_XCK <= 1'b0 ;
-    `e `elif( RST )
-    `b          MSL_CK_CTRs <= 0 ;
-                MSL_XCK <= 1'b0 ;
-    `e `elif(EE & ~ x_STOP_CTR_cy )
-    `b          MSL_CK_CTRs <= (MSL_CK_CTR_cy)? 0 : (MSL_CK_CTRs + 1) ;
-                if(MSL_CK_CTR_cy) 
-                    MSL_XCK <= ~ MSL_XCK ;
-    `e
+
+//    `lp C_STOP_W = log2( C_STOP_N) ;
+//    `r [C_STOP_W-1:0] STOP_CTRs ;
+//    `w x_STOP_CTR_cy = &(STOP_CTRs| ~(C_STOP_N-1)) ;
+//    `ack `xar   
+//        STOP_CTRs <= 1'b0 ;
+//    `elif( RST )
+//        STOP_CTRs <=  0 ;
+//    `elif( EE )
+//        if( ~ x_STOP_CTR_cy )  
+//                STOP_CTRs <= STOP_CTRs + 1 ;
+
+    `w STOP ;
+    RC_DLY
+        #( .C_WAIT_N    ( C_STOP_N  )
+        ) RC_DLY_STOP 
+        (     .CK_i     ( CK_i      )
+            , .XARST_i  ( XARST_i   )
+            , .CK_EE_i  ( EE        ) //1us 
+            , .DAT_i    ( ~ RST     )
+            , .QQ_o     ( STOP      )
+//            , .CYD_o    ( )
+        ) 
+    ;
+
+
+
+//    `lp C_MSL_CK_CTR_W = log2( C_MSL_CK_HALF_N ) ;
+//    `r MSL_XCK ;
+//    `r[C_MSL_CK_CTR_W-1:0] MSL_CK_CTRs ;
+//    `w MSL_CK_CTR_cy = &(MSL_CK_CTRs | ~ (C_MSL_CK_HALF_N-1)) ;
+//    `ack `xar
+//    `b          MSL_CK_CTRs <= 0 ;
+//                MSL_XCK <= 1'b0 ;
+//    `e `elif( RST )
+//    `b          MSL_CK_CTRs <= 0 ;
+//                MSL_XCK <= 1'b0 ;
+//    `e `elif(EE & ~ x_STOP_CTR_cy )
+//    `b          MSL_CK_CTRs <= (MSL_CK_CTR_cy)? 0 : (MSL_CK_CTRs + 1) ;
+//                if(MSL_CK_CTR_cy) 
+//                    MSL_XCK <= ~ MSL_XCK ;
+//    `e
+//    `w MSL_ck = ~ MSL_XCK ;
+
+    `w MSL_XCK ;
+    RC_DLY
+        #( .C_WAIT_N    ( C_MSL_CK_HALF_N   ) 
+        ) RC_DLY_MSLCK_CTR 
+        (
+              .CK_i     ( CK_i          )
+            , .XARST_i  ( XARST_i       )
+            , .RST_i    ( RST           )
+            , .CK_EE_i  ( EE  & ~STOP   ) //1us 
+            , .DAT_i    ( ~ MSL_XCK     )
+            , .QQ_o     ( MSL_XCK       )
+//            , .CYD_o    ()
+        ) 
+    ;
     `w MSL_ck = ~ MSL_XCK ;
+
     `w [9:0] MSL_qs ;
     MC14017
-        Q1(   .ARST_i       ( ~XARST_i | (~XPSW_i & MSL_qs[9])  | RST )
+        IC1(  .ARST_i       ( ~XARST_i | (~XPSW_i & MSL_qs[9])  | RST )
             , .CK_i         ( MSL_ck            )
             , .XEN_XCK_i    ( MSL_qs[9]             )
             , .qs_o         ( MSL_qs                )
-            , .CY_o         ()
+//            , .CYD_o        ()
         ) 
     ;
 
@@ -114,41 +174,70 @@ module PLANET_EMP_CORE
     `a LEDs_ON_o[7] = MSL_qs[6]  ;
     `a LEDs_ON_o[8] = MSL_qs[7]  ;
 
-    `lp C_SND_CTR_W = log2(C_SND_CK_HALF_N) ;
-    `r[C_SND_CTR_W-1:0] SND_CTRs ;
-    `w SND_CTR_cy = &(SND_CTRs | ~ (C_SND_CK_HALF_N-1)) ;
-    `r SND ;
-    `ack `xar
-    `b          SND <= 1'b0 ;
-                SND_CTRs <= 0 ;
-    `e `elif( RST )
-    `b          SND <= 1'b0 ;
-                SND_CTRs <= 0 ;
-    `e `elif( EE )
-        if(MSL_ck & ~MSL_qs[9])
-        `b      SND_CTRs <= (SND_CTR_cy)? 0 :(SND_CTRs+1) ;
-                if(SND_CTR_cy)  SND <= ~SND ;
-        `e
+//    `lp C_SND_CTR_W = log2(C_SND_CK_HALF_N) ;
+//    `r[C_SND_CTR_W-1:0] SND_CTRs ;
+//    `w SND_CTR_cy = &(SND_CTRs | ~ (C_SND_CK_HALF_N-1)) ;
+//    `r SND ;
+//    `ack `xar
+//    `b          SND <= 1'b0 ;
+//                SND_CTRs <= 0 ;
+//    `e `elif( RST )
+//    `b          SND <= 1'b0 ;
+//                SND_CTRs <= 0 ;
+//    `e `elif( EE )
+//        if(MSL_ck & ~MSL_qs[9])
+//        `b      SND_CTRs <= (SND_CTR_cy)? 0 :(SND_CTRs+1) ;
+//                if(SND_CTR_cy)  SND <= ~SND ;
+//        `e
+//    `a SOUND_o = SND ;
+    `w SND ;
+    RC_DLY
+        #( .C_WAIT_N    ( C_SND_CK_HALF_N   )
+        ) RC_DLY_SND_CTR 
+        (     .CK_i     ( CK_i              )
+            , .XARST_i  ( XARST_i           )
+            , .RST_i    ( RST               )
+            , .CK_EE_i  ( EE                ) //1us 
+            , .DAT_i    ( ~ SND  & MSL_ck & ~MSL_qs[9])
+            , .QQ_o     ( SND               )
+//            , .CYD_o     ()
+        ) 
+    ;
     `a SOUND_o = SND ;
 
-    `lp C_EMP_CTR_W = log2(C_EMP_CK_N) ;
-    `r[C_EMP_CTR_W-1:0] EMP_CTRs ;
-    `w EMP_CTR_cy = &(EMP_CTRs | ~(C_EMP_CK_N-1)) ;
-    `r EMP_CK ;
-    `ack `xar 
-    `b          EMP_CTRs <= 0 ;
-                EMP_CK <= 1'b0 ;
-    `e `elif( RST )
-    `b          EMP_CTRs <= 0 ;
-                EMP_CK <= 1'b0 ;
-    `e `elif( EE )
-    `b          EMP_CTRs <= EMP_CTR_cy ? 0 : (EMP_CTRs+1) ;
-                if(EMP_CTR_cy)
-                    EMP_CK <= ~ EMP_CK ;
-    `e
+//    `lp C_EMP_CTR_W = log2(C_EMP_CK_N) ;
+//    `r[C_EMP_CTR_W-1:0] EMP_CTRs ;
+//    `w EMP_CTR_cy = &(EMP_CTRs | ~(C_EMP_CK_N-1)) ;
+//    `r EMP_CK ;
+//    `ack `xar 
+//    `b          EMP_CTRs <= 0 ;
+//                EMP_CK <= 1'b0 ;
+//    `e `elif( RST )
+//    `b          EMP_CTRs <= 0 ;
+//                EMP_CK <= 1'b0 ;
+//    `e `elif( EE )
+//    `b          EMP_CTRs <= EMP_CTR_cy ? 0 : (EMP_CTRs+1) ;
+//                if(EMP_CTR_cy)
+//                    EMP_CK <= ~ EMP_CK ;
+//    `e
+    `w EMP_CK ;
+    RC_DLY
+        #( .C_WAIT_N    ( C_EMP_CK_N ) //??
+        ) RC_DLY_EMP_CK_CTR (
+              .CK_i     ( CK_i      )
+            , .XARST_i  ( XARST_i   )
+            , .RST_i    ( RST       )
+            , .CK_EE_i  ( EE        ) //1us 
+            , .DAT_i    ( ~ EMP_CK )
+            , .QQ_o     ( EMP_CK   )
+//            , .CYD_o     ()
+        ) 
+    ;
+
+
     `w[7:0] EMP_QQs ;
     MC14015
-        Q2_A
+        IC2_A
         (   
               .CK_i         ( EMP_CK                )
             , .ARST_i       ( ~XARST_i  | RST       )
@@ -157,7 +246,7 @@ module PLANET_EMP_CORE
         ) 
     ;
     MC14015
-        Q2_B
+        IC2_B
         (     
               .CK_i         ( EMP_CK                )
             , .ARST_i       ( ~XARST_i | RST        )
@@ -174,6 +263,53 @@ module PLANET_EMP_CORE
     `a LEDs_ON_o[15] = ~ EMP_QQs[0] ;
     `a LEDs_ON_o[16] = ~ EMP_QQs[1] ;
     `a LEDs_ON_o[17] = ~ EMP_QQs[2] ;
+endmodule
+
+
+
+module RC_DLY
+#(
+      `param C_WAIT_N = 1000
+)(
+      `in `tri1 CK_i
+    , `in `tri1 XARST_i
+    , `in `tri1 CK_EE_i //1us 
+    , `in `tri0 RST_i
+    , `in `tri0 DAT_i
+    , `out `w QQ_o
+    , `out `w CYD_o
+) ;
+    // log2() for calc bit width from data N
+    // constant function on Verilog 2001
+    `func `int log2 ;
+        `in `int value ;
+    `b  value = value - 1 ;
+        for(log2=0 ; value>0 ; log2=log2+1)
+            value = value>>1 ;
+    `e `efunc
+
+    `lp C_CTR_W = log2( C_WAIT_N ) ;
+    `r[C_CTR_W-1:0] CTRs ;
+    `w cy = &(CTRs | ~(C_WAIT_N-1)) ;
+//    `a cy_o = cy ;
+    `r QQ ;
+    `r CYD ;
+    `ack `xar
+    `b  CTRs    <= 1'b0 ;
+        QQ      <= 1'b0 ;
+        CYD     <= 1'b0 ;
+    `e else `cke
+    `b  if( cy | RST_i)
+        `b  CTRs <= 0 ;
+            QQ <= DAT_i ;
+        `e `elif( (QQ ^ DAT_i) )
+            CTRs <= CTRs + 1 ;
+        else
+            CTRs <= CTRs ; // stop
+        CYD <= cy ;
+    `e
+    `a QQ_o = QQ ;
+    `a CYD_o = cy ;
 endmodule
 
 
