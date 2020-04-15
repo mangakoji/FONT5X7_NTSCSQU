@@ -81,7 +81,7 @@ module PLANET_EMP_CORE
 //            , .CYD_o    ( )
         ) 
     ;
-    `w stop = stop & rst ;
+    `w stop = STOP | rst ;
 
 
     `w MSL_XCK ;
