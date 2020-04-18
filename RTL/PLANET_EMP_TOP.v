@@ -18,6 +18,7 @@ module PLANET_EMP_TOP
     , `out `w[5:0]  VIDEOs_o
     , `out `w       SOUND_o
     , `out `w[17:0] LEDs_ON_o
+    , `out `w [7:0]         DBGs_o
 ) ;
     `func `int log2;
         `in `int value ;
@@ -38,6 +39,7 @@ module PLANET_EMP_TOP
             , .XPSW_i   ( XPSW_i        )
             , .LEDs_ON_o( LEDs_ON       )
             , .SOUND_o  ( SOUND_o       )
+            , .DBGs_o   ( DBGs_o        )
         ) 
     ;
     `a LEDs_ON_o = LEDs_ON ;

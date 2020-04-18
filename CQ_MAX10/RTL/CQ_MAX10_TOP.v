@@ -126,6 +126,7 @@ module CQ_MAX10_TOP
     `w VIDEO_o ;
     `w SOUND_o ;
     `w [17:0]LEDs_ON_o ;
+    `w[7:0] EMP_DBGs_o ;
     PLANET_EMP_TOP
         #(      .C_F_CK     ( C_F_CK    )
         ) PLANET_EMP_TOP
@@ -136,6 +137,7 @@ module CQ_MAX10_TOP
             , .VIDEO_o      ( VIDEO_o   )
             , .SOUND_o      ( SOUND_o   )
             , .LEDs_ON_o    ( LEDs_ON_o )
+            , .DBGs_o       ( EMP_DBGs_o        )
         )                    
     ;
 
@@ -153,7 +155,10 @@ module CQ_MAX10_TOP
         (BJ_DBGs[22]) ?
             C_TIMESTAMP
         :
-            {LEDs_ON_o} 
+            {
+                  LEDs_ON_o
+                , EMP_DBGs_o
+            } 
     ;
 
 //    assign P41 = DAC_DONE_o ;

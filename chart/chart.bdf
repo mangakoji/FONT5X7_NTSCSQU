@@ -2084,10 +2084,6 @@ applicable agreement for further details.
 	(pt 904 656)
 )
 (connector
-	(pt 944 648)
-	(pt 704 648)
-)
-(connector
 	(pt 944 656)
 	(pt 944 648)
 )
@@ -2116,32 +2112,12 @@ applicable agreement for further details.
 	(pt 712 688)
 )
 (connector
-	(pt 712 688)
-	(pt 712 728)
-)
-(connector
 	(pt 760 760)
 	(pt 768 760)
 )
 (connector
-	(pt 496 776)
-	(pt 768 776)
-)
-(connector
-	(pt 496 648)
-	(pt 496 776)
-)
-(connector
 	(pt 760 728)
 	(pt 760 760)
-)
-(connector
-	(pt 488 648)
-	(pt 496 648)
-)
-(connector
-	(pt 496 648)
-	(pt 608 648)
 )
 (connector
 	(pt 752 728)
@@ -2715,6 +2691,46 @@ applicable agreement for further details.
 	(pt 416 504)
 	(pt 416 528)
 )
+(connector
+	(pt 768 776)
+	(pt 496 776)
+)
+(connector
+	(pt 496 648)
+	(pt 496 776)
+)
+(connector
+	(pt 488 648)
+	(pt 496 648)
+)
+(connector
+	(pt 496 648)
+	(pt 608 648)
+)
+(connector
+	(pt 712 728)
+	(pt 704 728)
+)
+(connector
+	(pt 704 728)
+	(pt 704 696)
+)
+(connector
+	(pt 704 696)
+	(pt 728 696)
+)
+(connector
+	(pt 728 696)
+	(pt 728 648)
+)
+(connector
+	(pt 944 648)
+	(pt 728 648)
+)
+(connector
+	(pt 728 648)
+	(pt 704 648)
+)
 (junction (pt 704 520))
 (junction (pt 704 536))
 (junction (pt 704 552))
@@ -2746,7 +2762,6 @@ applicable agreement for further details.
 (junction (pt 840 920))
 (junction (pt 704 616))
 (junction (pt 704 648))
-(junction (pt 712 688))
 (junction (pt 848 768))
 (junction (pt 760 728))
 (junction (pt 840 768))
@@ -2784,6 +2799,7 @@ applicable agreement for further details.
 (junction (pt 904 704))
 (junction (pt 928 704))
 (junction (pt 264 568))
+(junction (pt 728 648))
 (text "ÉQÅ[ÉÄòfêØíÈçë LED location" (rect 136 368 709 403)(font "ÇlÇr ÉSÉVÉbÉN" (font_size 26)))
 (text "K3SsC1" (rect 472 408 521 423)(font "Consolas" (font_size 10)))
 (text "@mangakoji" (rect 528 408 610 423)(font "Consolas" (font_size 10)))
