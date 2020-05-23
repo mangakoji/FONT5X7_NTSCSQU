@@ -1,4 +1,4 @@
 // TIMESTAMP.v
-// Sat Apr 18 17:17:14 JST 2020
-// 5E9AB78A
-parameter [31:0] C_TIMESTAMP = 32'h5E9AB78A ;
+// Sat May 23 23:24:31 JST 2020
+// 5EC9321F
+parameter [31:0] C_TIMESTAMP = 32'h5EC9321F ;

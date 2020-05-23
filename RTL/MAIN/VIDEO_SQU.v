@@ -55,6 +55,81 @@ module VIDEO_SQU
     ;
     `a HVcy_o = (VCTRs==(240-1)) & (HCTRs==(640-1)) & CK_EE_i ;
 
+
+
+    `func[4:0] f_clip30 ;
+        `in[7:0] XXs ;
+        `b
+            f_clip30 = ((0+XXs) >= 120)? 30 : (0+XXs) / 4 ;
+        `e
+    `efunc
+    `func[4:0]f_addXY ;
+        `in[6:0] XXs ;
+        `in[6:0] YYs ;
+        `int tmp ;
+        `b
+            tmp = 32'd0 + XXs + YYs ;
+            tmp = (3 * tmp)  / 4 ;
+            f_addXY = f_clip30( tmp[7:0]  ) ;
+        `e
+    `efunc
+
+    `w[6:0]  XX =  HCTRs[7:1] ;
+    `w[6:0] xXX = ~HCTRs[7:1] ;
+    `w[6:0]  YY = ~VCTRs[6:0] ;
+    `w[6:0] xYY =  VCTRs[6:0] ;
+    `r[2:0] DPHs_AD ;
+    `r[4:0] DYs_ADs[0:7] ;
+    `r[2:0] DPHs    ;
+    `r[4:0] DYs     ;
+    `ack
+        `xar
+        `b
+        `e else `cke
+        `b
+            DYs_ADs[0] <= f_clip30( XX       ) ;
+            DYs_ADs[1] <= f_addXY(  XX ,  YY ) ;
+            DYs_ADs[2] <= f_clip30(       YY ) ;
+            DYs_ADs[3] <= f_addXY( xXX ,  YY ) ;
+            DYs_ADs[4] <= f_clip30(      xXX ) ;
+            DYs_ADs[5] <= f_addXY( xXX , xYY ) ;
+            DYs_ADs[6] <= f_clip30(      xYY ) ;
+            DYs_ADs[7] <= f_addXY(  XX , xYY ) ;
+            case({VCTRs[7],~HCTRs[8]})
+                2'b00:
+                    if(YY < {1'b0,XX[6:1]}) 
+                                        DPHs_AD <= 0 ;
+                    `elif({1'b0,YY[6:1]} < XX)
+                                        DPHs_AD <= 1 ;
+                    else 
+                                        DPHs_AD <= 2 ;
+                2'b01:
+                    if({1'b0,YY[6:1]} > xXX)
+                                        DPHs_AD <= 2 ;
+                    `elif(YY > {1'b0,xXX[6:1]})
+                                        DPHs_AD <= 3 ;
+                    else
+                                        DPHs_AD <= 4 ;
+                2'b11:
+                    if(xYY < {1'b0,xXX[6:1]})
+                                        DPHs_AD <= 4 ;
+                    `elif({1'b0,xYY[6:1]} < xXX)
+                                        DPHs_AD <= 5 ;
+                    else
+                                        DPHs_AD <= 6 ;
+                2'b10:
+                    if({1'b0,xYY[6:1]} > XX)
+                                        DPHs_AD <= 6 ;
+                    `elif(xYY > {1'b0,XX[6:1]})
+                                        DPHs_AD <= 7 ;
+                    else
+                                        DPHs_AD <= 0 ;
+            `ecase
+            DPHs <= DPHs_AD ;
+            DYs <= DYs_ADs[DPHs_AD] ;
+        `e
+
+
     `r[3:0] MV_RAMPs ;
     `w[7:0] MV_RAMPs_a ;
     `a MV_RAMPs_a = HCTRs[9:1] + VCTRs + FCTRs ;
@@ -94,7 +169,7 @@ module VIDEO_SQU
             if( ~ XBLK_AD )
                 CPHs_NOW <= CPHs + 4 ;
             else 
-                case( LED_COLOR_PHs )
+                case( DPHs) //LED_COLOR_PHs )
                     0 : CPHs_NOW <= CPHs + 0 ;
                     1 : CPHs_NOW <= CPHs + 1 ;
                     2 : CPHs_NOW <= CPHs + 2 ;
@@ -120,7 +195,8 @@ module VIDEO_SQU
     `r      XBLK ;
     `r      XBLK_AD2 ;
     `w[7:0] VIDEOs_a ;//2s
-    `a VIDEOs_a = 
+    `a VIDEOs_a = C_PEDE + DYs+ $signed( COLORs ) ;
+/*    `a VIDEOs_a = 
         ( LED_HIT)
         ?
             ( 10 + C_PEDE)
@@ -135,6 +211,7 @@ module VIDEO_SQU
         :
             ( 0 + C_PEDE)
     ;
+*/
 //    `a VIDEOs_a = 
 //        (LED_HIT)
 //            ?
