@@ -83,31 +83,31 @@ module FONT5X7_NTSCSQU
     `a`slice(VDISP_DATss,16*11+ 8 ,5) = {1'b0 , DICE_LEDs_i[0]};
     `a`slice(VDISP_DATss,16*11+15 ,5) = {1'b0 , DICE_LEDs_i[0]};
 
-    `a`slice(VDISP_DATss,16* 1+ 1 ,5) = {1'b0 , BUS_TIME_STAMPs_i[4*7+:4]};
-    `a`slice(VDISP_DATss,16* 1+ 2 ,5) = {1'b0 , BUS_TIME_STAMPs_i[4*6+:4]};
-    `a`slice(VDISP_DATss,16* 1+ 3 ,5) = {1'b0 , BUS_TIME_STAMPs_i[4*5+:4]};
-    `a`slice(VDISP_DATss,16* 1+ 4 ,5) = {1'b0 , BUS_TIME_STAMPs_i[4*4+:4]};
-    `a`slice(VDISP_DATss,16* 1+ 6 ,5) = {1'b0 , BUS_TIME_STAMPs_i[4*3+:4]};
-    `a`slice(VDISP_DATss,16* 1+ 7 ,5) = {1'b0 , BUS_TIME_STAMPs_i[4*2+:4]};
-    `a`slice(VDISP_DATss,16* 1+ 8 ,5) = {1'b0 , BUS_TIME_STAMPs_i[4*1+:4]};
-    `a`slice(VDISP_DATss,16* 1+ 9 ,5) = {1'b0 , BUS_TIME_STAMPs_i[4*0+:4]};
+    `a`slice(VDISP_DATss,16* 1+ 1 ,5) = {1'b1 , BUS_TIME_STAMPs_i[4*7+:4]};
+    `a`slice(VDISP_DATss,16* 1+ 2 ,5) = {1'b1 , BUS_TIME_STAMPs_i[4*6+:4]};
+    `a`slice(VDISP_DATss,16* 1+ 3 ,5) = {1'b1 , BUS_TIME_STAMPs_i[4*5+:4]};
+    `a`slice(VDISP_DATss,16* 1+ 4 ,5) = {1'b1 , BUS_TIME_STAMPs_i[4*4+:4]};
+    `a`slice(VDISP_DATss,16* 1+ 6 ,5) = {1'b1 , BUS_TIME_STAMPs_i[4*3+:4]};
+    `a`slice(VDISP_DATss,16* 1+ 7 ,5) = {1'b1 , BUS_TIME_STAMPs_i[4*2+:4]};
+    `a`slice(VDISP_DATss,16* 1+ 8 ,5) = {1'b1 , BUS_TIME_STAMPs_i[4*1+:4]};
+    `a`slice(VDISP_DATss,16* 1+ 9 ,5) = {1'b1 , BUS_TIME_STAMPs_i[4*0+:4]};
 
-    `a`slice(VDISP_DATss,16* 3+ 5 ,5) = {1'b0 , BUS_TIME_STAMPs_i[4*7+:4]};
-    `a`slice(VDISP_DATss,16* 3+ 6 ,5) = {1'b0 , BUS_TIME_STAMPs_i[4*6+:4]};
-    `a`slice(VDISP_DATss,16* 3+ 7 ,5) = {1'b0 , BUS_TIME_STAMPs_i[4*5+:4]};
-    `a`slice(VDISP_DATss,16* 3+ 8 ,5) = {1'b0 , BUS_TIME_STAMPs_i[4*4+:4]};
-    `a`slice(VDISP_DATss,16* 3+10 ,5) = {1'b0 , BUS_TIME_STAMPs_i[4*3+:4]};
-    `a`slice(VDISP_DATss,16* 3+11 ,5) = {1'b0 , BUS_TIME_STAMPs_i[4*2+:4]};
-    `a`slice(VDISP_DATss,16* 3+12 ,5) = {1'b0 , BUS_TIME_STAMPs_i[4*1+:4]};
-    `a`slice(VDISP_DATss,16* 3+13 ,5) = {1'b0 , BUS_TIME_STAMPs_i[4*0+:4]};
+    `a`slice(VDISP_DATss,16* 3+ 5 ,5) = {1'b1 , DISP_DATss_i[4*7+:4]};
+    `a`slice(VDISP_DATss,16* 3+ 6 ,5) = {1'b1 , DISP_DATss_i[4*6+:4]};
+    `a`slice(VDISP_DATss,16* 3+ 7 ,5) = {1'b1 , DISP_DATss_i[4*5+:4]};
+    `a`slice(VDISP_DATss,16* 3+ 8 ,5) = {1'b1 , DISP_DATss_i[4*4+:4]};
+    `a`slice(VDISP_DATss,16* 3+10 ,5) = {1'b1 , DISP_DATss_i[4*3+:4]};
+    `a`slice(VDISP_DATss,16* 3+11 ,5) = {1'b1 , DISP_DATss_i[4*2+:4]};
+    `a`slice(VDISP_DATss,16* 3+12 ,5) = {1'b1 , DISP_DATss_i[4*1+:4]};
+    `a`slice(VDISP_DATss,16* 3+13 ,5) = {1'b1 , DISP_DATss_i[4*0+:4]};
     `w      FONT_HIT    ;
     FONT5X7
         #(
              .C_BAR_MODE    ( 0         )
-            ,.C_HMAGs       ( 7         )
-            ,.C_HST         ( 130       )
-            ,.C_VMAGs       ( 3         )
-            ,.C_VST         ( 2         )
+            ,.C_HMAGs       ( 6         )
+            ,.C_HST         ( 16         )
+            ,.C_VMAGs       ( 2         )
+            ,.C_VST         ( 8         )
         )FONT5X7
         (
              .CK_i              ( CK_i          )

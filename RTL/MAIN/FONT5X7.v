@@ -342,10 +342,11 @@ module TC_FONT5X7
 
     FONT5X7
         #(
-             .C_HMAGs ( C_HMAGs)
-            ,.C_HST   ( C_HST  )
-            ,.C_VMAGs ( C_VMAGs)
-            ,.C_VST   ( C_VST  )
+             .C_BAR_MODE(    0      )
+            ,.C_HMAGs   ( C_HMAGs   )
+            ,.C_HST     ( C_HST     )
+            ,.C_VMAGs   ( C_VMAGs   )
+            ,.C_VST     ( C_VST     )
         ) FONT5X7 
         (                     
              .CK_i              ( CK_i      )
