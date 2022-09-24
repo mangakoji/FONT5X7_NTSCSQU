@@ -1,58 +1,28 @@
-//VIDEO_SQU.v
-// VIDEO_SQU()
+//NTSC_SQU.v
+// NTSC_SQU()
 //
 //
 // non interace ,59.94FPS 263line system
 //
 //K38u :1st
-`ifndef VIDEO_SQU_ENC
+`ifndef NTSC_SQU_ENC
     `include "../MISC/define.vh"
     `default_nettype none
-module VIDEO_SQU_ENC
+module NTSC_SQU_ENC
 #(
     `p C_XCBURST_SHUF     = 1'b0 
 )(
-      `in `tri1     CK_i           //12.27272MHz
-    , `in `tri1     XARST_i
-    , `in `tri1     CK_EE_i        //12.27272MHz
+     `in`tri1       CK_i           //n x 12.27272MHz
+    ,`in`tri1       XARST_i
+    ,`in`tri1       PX_CK_EE_i      //12.272727MHz
+    ,`in`tri0[2:0]  CBURST_CPHs_i          //str
+    ,`in`tri0       CBURST_NOW_i
+    ,`in`tri0       XSYNC_i
+    ,`in`tri0       XBLK_i
     ,`in`tri0[2:0]  CPHs_i          //str
     ,`in`tri0[5:0]  YYs_i           //str
-    ,`out`w         HVcy_o
-    , `out `w[5:0]  VIDEOs_o
+    ,`out`w[5:0]    VIDEOs_o
 );
-
-    `w [9:0] HCTRs      ;
-    `w [8:0] VCTRs      ;
-    `w [7:0] FCTRs      ;
-    `w      XBLK_AD     ;
-    `w      CBURST_NOW  ;
-    `w      XSYNC       ;
-//    `w[1:0]  CCTRs            ;
-    `w[2:0]  BURST_CPHs         ;
-    VIDEO_SQU_TG
-        #(
-              .C_PX_DLY         ( 3              )
-            , .C_CBURST_DLY_N   ( 2              )
-            , .C_XCBURST_SHUF   ( C_XCBURST_SHUF )
-        )VIDEO_SQU_TG
-        (
-              .CK_i             ( CK_i          )//12.27272MHz
-            , .XARST_i          ( XARST_i       )
-            , .CK_EE_i          ( CK_EE_i       )//12.27272MHz
-//            , .RST_i            ( RST_i         )
-            , .HCTRs_o          ( HCTRs         )
-            , .VCTRs_o          ( VCTRs         )
-            , .FCTRs_o          ( FCTRs         )
-            , .XBLK_o           ( XBLK_AD       )
-            , .CBURST_NOW_o     ( CBURST_NOW    )
-            , .XSYNC_o          ( XSYNC         )
-            , .CPHs_o           ( BURST_CPHs    )
-        )
-    ;
-    `a HVcy_o = (VCTRs==(240-1)) & (HCTRs==(640-1)) & CK_EE_i ;
-
-
-
     `r[2:0] CPHs_NOW ;
     `r `s [3:0] COLORs ; //2s
     `ack
@@ -60,20 +30,20 @@ module VIDEO_SQU_ENC
         `b
             CPHs_NOW <= 0 ;
             COLORs <= 0 ;
-        `e else `cke
+        `eelif( PX_CK_EE_i )
         `b
-            if( ~ XBLK_AD )
-                CPHs_NOW <= BURST_CPHs + 4 ;
+            if( ~ XBLK_i )
+                CPHs_NOW <= CBURST_CPHs_i + 4 ;
             else 
                 case( CPHs_i )
-                    0 : CPHs_NOW <= BURST_CPHs + 0 ;
-                    1 : CPHs_NOW <= BURST_CPHs + 1 ;
-                    2 : CPHs_NOW <= BURST_CPHs + 2 ;
-                    3 : CPHs_NOW <= BURST_CPHs + 3 ;
-                    4 : CPHs_NOW <= BURST_CPHs + 4 ;
-                    5 : CPHs_NOW <= BURST_CPHs + 5 ;
-                    6 : CPHs_NOW <= BURST_CPHs + 6 ;
-                    7 : CPHs_NOW <= BURST_CPHs + 7 ;
+                    0 : CPHs_NOW <= CBURST_CPHs_i + 0 ;
+                    1 : CPHs_NOW <= CBURST_CPHs_i + 1 ;
+                    2 : CPHs_NOW <= CBURST_CPHs_i + 2 ;
+                    3 : CPHs_NOW <= CBURST_CPHs_i + 3 ;
+                    4 : CPHs_NOW <= CBURST_CPHs_i + 4 ;
+                    5 : CPHs_NOW <= CBURST_CPHs_i + 5 ;
+                    6 : CPHs_NOW <= CBURST_CPHs_i + 6 ;
+                    7 : CPHs_NOW <= CBURST_CPHs_i + 7 ;
                 endcase
             case( CPHs_NOW )
                 0 : COLORs <=  3 ;
@@ -93,24 +63,22 @@ module VIDEO_SQU_ENC
     // Wh100:`d12+`d30=42 ;
     `lp C_PEDE = 5'd12  ;
     `r[5:0] VIDEOs ; //6
-    `r      XBLK ;
-    `r      XBLK_AD2 ;
+    `r[2:0]XBLK_Ds ;
     `w[7:0] VIDEOs_a ;//2s
     `a VIDEOs_a = C_PEDE + YYs_i + $signed( COLORs ) ;
     `ack
         `xar
         `b
-            XBLK <= 1'b1 ;
+            XBLK_Ds <= ~0 ;
             VIDEOs <= C_PEDE ;
-       `e else `cke
+       `eelif( PX_CK_EE_i )
         `b
-            XBLK_AD2 <= XBLK_AD ;
-            XBLK <= XBLK_AD2 ;
-            if( ~ XSYNC )
+            `sfl( XBLK_Ds,XBLK_i) ;
+            if( ~ XSYNC_i )
                 VIDEOs <= 0 ;
-            else if( CBURST_NOW )
+            else if( CBURST_NOW_i )
                 VIDEOs <= C_PEDE + `Ds( {{4{COLORs[3]}},COLORs[3:1]});
-            else if( ~ XBLK )
+            else if( ~ XBLK_Ds[2] )
                 VIDEOs <= C_PEDE ;
             else
                 VIDEOs <= 
@@ -122,16 +90,16 @@ module VIDEO_SQU_ENC
     `a VIDEOs_o = VIDEOs ;
 endmodule
     `default_nettype wire
-    `define VIDEO_SQU_ENC
+    `define NTSC_SQU_ENC
 `endif
 
 
 `ifndef FPGA_COMPILE
-    `ifndef TB_VIDEO_SQU_ENC
+    `ifndef TB_NTSC_SQU_ENC
         `timescale 1ns/1ns
         `include "../MISC/define.vh"
         `default_nettype none
-module TB_VIDEO_SQU_ENC
+module TB_NTSC_SQU_ENC
 #(
     parameter C_C=10.0
 )(
@@ -158,8 +126,8 @@ module TB_VIDEO_SQU_ENC
     `r RST_i ;
     wire[4:0]   VIDEOs_o ;
     `r[17:0] LEDs_ON_i ;
-    VIDEO_SQU
-        VIDEO_SQU
+    NTSC_SQU
+        NTSC_SQU
         (
               .CK_i     ( CK_i      )      //8*12.27272MHz
             , .XARST_i  ( XARST_i   )
@@ -172,7 +140,7 @@ module TB_VIDEO_SQU_ENC
     `al@(`pe CK_i or `ne XARST_i)
         if( ~XARST_i)
             LEDs_ON_i   <= ~ 0 ;
-        else if(VIDEO_SQU.HVcy_o)
+        else if(NTSC_SQU.HVcy_o)
             LEDs_ON_i <= ~ LEDs_ON_i ;
 
     `int ii ;
@@ -190,7 +158,7 @@ module TB_VIDEO_SQU_ENC
         $finish ;
     `e
 endmodule
-        `define TB_VIDEO_SQU_ENC
+        `define TB_NTSC_SQU_ENC
         `default_nettype wire
     `endif
 `endif

@@ -7,72 +7,83 @@
 //K38u :1st
 
 `ifndef FPGA_COMPILE
-    `include "./VIDEO_SQU_TG.v"
-    `include "./VIDEO_SQU_ENC.v"
+    `include "./NTSC_SQU_TG.v"
+    `include "./NTSC_SQU_ENC.v"
 `endif
-`ifdef VIDEO_SQU
+`ifndef NTSC_SQU
     `include "../MISC/define.vh"
     `default_nettype none
-module VIDEO_SQU
+module NTSC_SQU
 #(
-     parameter C_PX_DLY         = 3
-    ,parameter C_CBURST_DLY_N   = 2
-    ,parameter C_XCBURST_SHUF   = 1'b0 
+     `p C_F_CK           = 135_000_000
+    ,`p C_PX_DLY         = 3
+    ,`p C_CBURST_DLY_N   = 2
+    ,`p C_XCBURST_SHUF   = 1'b0 
 )(
       `in `tri1     CK_i           //n x 12.27272MHz
     , `in `tri1     XARST_i
-    , `in `tri1     PX_CK_EE_i        //12.27272MHz
     , `in `tri0     RST_i
+    ,`out`w         PX_CK_EE_o        //12.27272MHz
     ,`out`w[ 9:0]   HCTRs_o
     ,`out`w[ 9:0]   VCTRs_o
+    ,`out`w[ 7:0]   FCTRs_o
     ,`in`tri0[ 5:0] YYs_i
     ,`in`tri0[ 2:0] CPHs_i
     ,`out`w         VIDEO_o
 );
-
+    `w      PX_CK_EE    ;
     `w [9:0] HCTRs      ;
     `w [8:0] VCTRs      ;
     `w [7:0] FCTRs      ;
-    `w      XBLK_AD     ;
+    `w      XBLK        ;
     `w      CBURST_NOW  ;
     `w      XSYNC       ;
     `w[2:0]  BURST_CPHs ;
-    VIDEO_SQU_TG
+    NTSC_SQU_TG
         #(
-              .C_PX_DLY         ( C_PX_DLY                  )
-            , .C_CBURST_DLY_N   ( C_CBURST_DLY_N             )
+             .C_F_CK            ( C_F_CK            )
+            ,.C_PX_DLY          ( C_PX_DLY          )
+            ,.C_CBURST_DLY_N    ( C_CBURST_DLY_N    )
 //            , .C_XCBURST_SHUF   ( C_XCBURST_SHUF )
-        )VIDEO_SQU_TG
+        )NTSC_SQU_TG
         (
               .CK_i             ( CK_i          )//n x 12.27272MHz
             , .XARST_i          ( XARST_i       )
-            , .PX_CK_EE_i       ( PX_CK_EE_i    )//12.27272MHz
+            , .PX_CK_EE_o       ( PX_CK_EE      )//12.27272MHz
             , .RST_i            ( RST_i         )
             , .HCTRs_o          ( HCTRs         )
             , .VCTRs_o          ( VCTRs         )
             , .FCTRs_o          ( FCTRs         )
-            , .XBLK_o           ( XBLK_AD       )
             , .CBURST_NOW_o     ( CBURST_NOW    )
+            , .XBLK_o           ( XBLK          )
             , .XSYNC_o          ( XSYNC         )
             , .CPHs_o           ( BURST_CPHs    )
         )
     ;
-    `w HVcy = (VCTRs==(240-1)) & (HCTRs==(640-1)) & PX_CK_EE_i ;
+    `a PX_CK_EE_o = PX_CK_EE ;
+    `a HCTRs_o = HCTRs ;
+    `a VCTRs_o = VCTRs ;
+    `a FCTRs_o = FCTRs ;
+    `w HVcy = (VCTRs==(240-1)) & (HCTRs==(640-1)) & PX_CK_EE ;
 
-    VIDEO_SQU_ENC
-    
+
+    `w[5:0]VIDEOs ;
+    NTSC_SQU_ENC
 //        #(
 //              .C_XCBURST_SHUF     ( 1'b1 )
 //        )
-        VIDEO_SQU_ENC
+        NTSC_SQU_ENC
         (
-              .CK_i         ( CK_i      )      //8*12.27272MHz
-            , .XARST_i      ( XARST_i   )
-            , .PX_CK_EE_i   ( PX_CK_EE     )        //12.27272MHz
-//            , .RST_i        ()
-            , .LEDs_ON_i    ( LEDs_ON   )
-//            , .HVcy_o       ( HVcy      )
-            , .VIDEOs_o     ( VIDEOs    )
+             .CK_i          ( CK_i          )      //8*12.27272MHz
+            ,.XARST_i       ( XARST_i       )
+            ,.PX_CK_EE_i    ( PX_CK_EE      )        //12.27272MHz
+            ,.CBURST_NOW_i  ( CBURST_NOW    )
+            ,.CBURST_CPHs_i ( BURST_CPHs    )
+            ,.XSYNC_i       ( XSYNC         )
+            ,.XBLK_i        ( XBLK          )
+            ,.YYs_i         ( YYs_i         )
+            ,.CPHs_i        ( CPHs_i        )
+            ,.VIDEOs_o      ( VIDEOs        )
         )
     ;
     `r[6:0] DSs ;
@@ -82,19 +93,18 @@ module VIDEO_SQU
                                             + {1'b0,VIDEOs}
                                        ;
     `a VIDEO_o = DSs[6] ;
-
 endmodule
     `default_nettype wire
-    `define VIDEO_SQU
+    `define NTSC_SQU
 `endif
 
 
 `ifndef FPGA_COMPILE
-    `ifndef TB_VIDEO_SQU
+    `ifndef TB_NTSC_SQU
         `timescale 1ns/1ns
         `include "../MISC/define.vh"
         `default_nettype none
-module TB_VIDEO_SQU
+module TB_NTSC_SQU
 #(
     parameter C_C=10.0
 )(
@@ -121,8 +131,8 @@ module TB_VIDEO_SQU
     `r RST_i ;
     wire[4:0]   VIDEOs_o ;
     `r[17:0] LEDs_ON_i ;
-    VIDEO_SQU
-        VIDEO_SQU
+    NTSC_SQU
+        NTSC_SQU
         (
               .CK_i     ( CK_i      )      //8*12.27272MHz
             , .XARST_i  ( XARST_i   )
@@ -135,7 +145,7 @@ module TB_VIDEO_SQU
     `al@(`pe CK_i or `ne XARST_i)
         if( ~XARST_i)
             LEDs_ON_i   <= ~ 0 ;
-        else if(VIDEO_SQU.HVcy_o)
+        else if(NTSC_SQU.HVcy_o)
             LEDs_ON_i <= ~ LEDs_ON_i ;
 
     `int ii ;
@@ -154,6 +164,6 @@ module TB_VIDEO_SQU
     `e
 endmodule
         `default_nettype wire
-        `define TB_VIDEO_SQU
+        `define TB_NTSC_SQU
     `endif
 `endif

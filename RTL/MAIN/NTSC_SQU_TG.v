@@ -1,23 +1,24 @@
-//VIDEO_SQU_TG.v
-// VIDEO_SQU_TG()
+//NTSC_SQU_TG.v
+// NTSC_SQU_TG()
 //
 //
 // non interace ,59.94FPS 263line system
 //K31u :1st
 
-`ifndef VIDEO_SQU_TG
+`ifndef NTSC_SQU_TG
     `default_nettype none
     `include "../MISC/define.vh"
-module VIDEO_SQU_TG
+module NTSC_SQU_TG
 #(
-      `p C_PX_DLY           = 2
+     `p C_F_CK              = 135_000_00
+    , `p C_PX_DLY           = 2
     , `p C_CBURST_DLY_N     = 2
     , `p C_XCBURST_SHUF     = 1'b0 
 )(
-      `in `tri1      CK_i           //12.27272MHz
+      `in `tri1      CK_i           //n x 12.27272MHz
     , `in `tri1      XARST_i
-    , `in `tri1      CK_EE_i        //12.27272MHz
     , `in `tri0      RST_i
+    , `out`w        PX_CK_EE_o        //12.27272MHz
     , `out `w[9:0]  HCTRs_o
     , `out `w[8:0]  VCTRs_o
     , `out `w[7:0]  FCTRs_o
@@ -27,6 +28,27 @@ module VIDEO_SQU_TG
     , `out `w[2:0]  CPHs_o
     , `out `w[1:0]  CCTRs_o 
 );
+    // constant function on Verilog 2001
+    `func `int log2 ;
+        `in `int value ;
+    `b  value = value - 1 ;
+        for(log2=0 ; value>0 ; log2=log2+1)
+            value = value>>1 ;
+    `e `efunc
+    `lp C_F_VCK = 12_272_272 ;
+    `lp C_VCK_DIV_N = ( 2*(C_F_CK/C_F_VCK)+1)/2 ;
+    `lp C_PCTR_W = log2( C_VCK_DIV_N ) ;
+    `r PX_CK_EE ;
+    `r[C_PCTR_W-1:0] PCTRs ;
+    `w PCTR_cy = `cy(PCTRs,(C_VCK_DIV_N -1)) ;
+    `ack`xar    {PX_CK_EE , PCTRs} <= 0 ;
+    else
+    `b                                  PX_CK_EE <= PCTR_cy ;
+        if( PCTR_cy )                   PCTRs <= 0 ;
+        else                            PCTRs <= PCTRs + 1 ;
+    `e
+    `a PX_CK_EE_o = PX_CK_EE ;
+
     `p C_H_PX_N                 = 780       ;
     `p C_H_ACT_PX_N             = 640       ;
     `p C_H_SYNC_N               = 58        ;//4.7us
@@ -53,7 +75,7 @@ module VIDEO_SQU_TG
             HCTRs <= (C_H_PX_N  -2) ;
             VCTRs <= (C_V_LINE_N -1) ;
             FCTRs  <= 0 ;
-        `e else `cke
+        `eelif( PX_CK_EE )
         `b
             if( RST_i )
             `b
@@ -118,7 +140,7 @@ module VIDEO_SQU_TG
         `b
             XBLK <= 1'b0 ;
             XSYNC <= 1'b1 ;
-        `e else `cke
+        `eelif( PX_CK_EE )
         `b
             if(
                 Hcy
@@ -151,7 +173,7 @@ module VIDEO_SQU_TG
     `ack
         `xar
             CBURST_NOW <= 1'b0 ;
-        else `cke
+        `elif( PX_CK_EE )
         if(
                 HCTRs==
                 (
@@ -190,7 +212,7 @@ module VIDEO_SQU_TG
     `ack
         `xar
             {CPHs,CCTRs} <= 0 ;
-        else `cke
+        `elif( PX_CK_EE )
         `b
             if( RST_i )
                 {CPHs,CCTRs} <= 0 ;
@@ -205,18 +227,18 @@ module VIDEO_SQU_TG
     `a CPHs_o = CPHs ;
     `a CCTRs_o = CCTRs ;
 endmodule
-//VIDEO_SQU_TG
-    `define VIDEO_SQU_TG
+//NTSC_SQU_TG
+    `define NTSC_SQU_TG
     `default_nettype wire
 `endif
 
 
 `ifndef FPGA_COMPILE
-    `ifndef TB_VIDEO_SQU_TG
+    `ifndef TB_NTSC_SQU_TG
         `timescale 1ns/1ns
         `include "../MISC/define.vh"
         `default_nettype none
-module TB_VIDEO_SQU_TG
+module TB_NTSC_SQU_TG
 #(
     parameter C_C=10.0
 )(
@@ -250,8 +272,8 @@ module TB_VIDEO_SQU_TG
     `w[4:0] COLOR_CTRs_o        ;
     `w[2:0]  CPHs_o             ;
     `w[1:0]  CCTRs_o            ;
-    VIDEO_SQU_TG
-        VIDEO_SQU_TG
+    NTSC_SQU_TG
+        NTSC_SQU_TG
         (
               .CK_i             ( CK_i           )//12.27272MHz
             , .XARST_i          ( XARST_i        )
@@ -284,7 +306,7 @@ module TB_VIDEO_SQU_TG
     `e
 endmodule
         `default_nettype wire
-        `define TB_VIDEO_SQU_TG
+        `define TB_NTSC_SQU_TG
     `endif
 `endif
 

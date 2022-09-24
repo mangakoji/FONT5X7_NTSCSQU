@@ -5,7 +5,7 @@
 // M9Nf : 1st.
 
 `ifndef FPGA_COMPILE
-    `include "./VIDEO_SQU.v"
+    `include "./NTSC_SQU.v"
     `include "./RADIAL_CHART.v"
     `include "./FONT5X7.v"
 `endif
@@ -33,35 +33,23 @@ module FONT5X7_NTSCSQU
         for(log2=0 ; value>0 ; log2=log2+1)
             value = value>>1 ;
     `e `efunc
-    `lp C_F_VCK = 12_272_272 ;
-    `lp C_VCK_DIV_N = ( 2*(C_F_CK/C_F_VCK)+1)/2 ;
-    `lp C_PCTR_W = log2( C_VCK_DIV_N ) ;
-    `r PX_CK_EE ;
-    `r[C_PCTR_W-1:0] PCTRs ;
-    `w PCTR_cy = `cy(PCTRs,(C_VCK_DIV_N -1)) ;
-    `ack`xar    {PX_CK_EE , PCTRs} <= 0 ;
-    else
-    `b                                  PX_CK_EE <= PCTR_cy ;
-        if( PCTR_cy )                   PCTRs <= 0 ;
-        else                            PCTRs <= PCTRs + 1 ;
-    `e
-    `a PX_CK_EE_o = PX_CK_EE ;
+    `w PX_CK_EE ;
     `w[ 9:0]HCTRs       ;
     `w[ 8:0]VCTRs       ;
     `w[ 7:0]FCTRs      ;
     `r[ 5:0]YYs      ;
     `r[ 2:0]CPHs     ;
-    VIDEO_SQU
+    NTSC_SQU
         #(
               .C_PX_DLY         ( 3              )
             , .C_CBURST_DLY_N   ( 2              )
 //            , .C_XCBURST_SHUF   ( C_XCBURST_SHUF )
-        )VIDEO_SQU
+        )NTSC_SQU
        (
               .CK_i             ( CK_i          )//n x 12.27272MHz
             , .XARST_i          ( XARST_i       )
-            , .PX_CK_EE_i       ( PX_CK_EE      )//12.27272MHz
             , .RST_i            ( RST_i         )
+            , .PX_CK_EE_o       ( PX_CK_EE      )//12.27272MHz
             , .HCTRs_o          ( HCTRs         )
             , .VCTRs_o          ( VCTRs         )
             , .FCTRs_o          ( FCTRs         )
@@ -70,6 +58,7 @@ module FONT5X7_NTSCSQU
             ,.VIDEO_o           ( VIDEO_o       )
         )
     ;
+    `a PX_CK_EE_o = PX_CK_EE ;
     `w[ 5:0] BG_YYs ;
     `w[ 2:0] BG_CPHs ;
     RADIAL_CHART
@@ -114,11 +103,11 @@ module FONT5X7_NTSCSQU
     `w      FONT_HIT    ;
     FONT5X7
         #(
-             .C_BAR_MODE    ( 0     )
-            ,.C_HMAGs       ( 7     )
-            ,.C_HST         ( 130   )
-            ,.C_VMAGs       ( 3     )
-            ,.C_VST         ( 2     )
+             .C_BAR_MODE    ( 0         )
+            ,.C_HMAGs       ( 7         )
+            ,.C_HST         ( 130       )
+            ,.C_VMAGs       ( 3         )
+            ,.C_VST         ( 2         )
         )FONT5X7
         (
              .CK_i              ( CK_i          )
