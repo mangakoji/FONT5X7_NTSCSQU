@@ -4,8 +4,10 @@
 //
 // non interace ,59.94FPS 263line system
 //K31u :1st
-`default_nettype none
-`include "../MISC/define.vh"
+
+`ifndef VIDEO_SQU_TG
+    `default_nettype none
+    `include "../MISC/define.vh"
 module VIDEO_SQU_TG
 #(
       `p C_PX_DLY           = 2
@@ -204,9 +206,16 @@ module VIDEO_SQU_TG
     `a CCTRs_o = CCTRs ;
 endmodule
 //VIDEO_SQU_TG
+    `define VIDEO_SQU_TG
+    `default_nettype wire
+`endif
 
 
-`timescale 1ns/1ns
+`ifndef FPGA_COMPILE
+    `ifndef TB_VIDEO_SQU_TG
+        `timescale 1ns/1ns
+        `include "../MISC/define.vh"
+        `default_nettype none
 module TB_VIDEO_SQU_TG
 #(
     parameter C_C=10.0
@@ -274,4 +283,8 @@ module TB_VIDEO_SQU_TG
         $finish ;
     `e
 endmodule
+        `default_nettype wire
+        `define TB_VIDEO_SQU_TG
+    `endif
+`endif
 
