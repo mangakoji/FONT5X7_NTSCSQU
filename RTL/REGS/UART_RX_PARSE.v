@@ -54,7 +54,7 @@ module UART_RX_PARSE
 
     ,`in`tri0[7:0]  RDATs_i
     ,`out`w         RD_REQ_o
-    ,`in`tri0       RD_ACK_i
+    ,`in`tri1       RD_ACK_i
     ,`out`w         TXD_o
 ) ;
     `w[7:0] RX_BYTEs        ;

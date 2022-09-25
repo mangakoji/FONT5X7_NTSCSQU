@@ -176,9 +176,9 @@ module CQ_MAX10_TOP
             ,.BUS_VERSIONs_o    ( BUS_VERSIONs      )
 //            ,.REGss_o           ( REGss_o  )
 //            ,.ADRs_o            ( ADRs_o   )
-//            ,.RD_REQ_o          ( RD_REQ_o )
+//            ,.RD_REQ_o          ( RD_REQ    )
 //            ,.RDATss_i          ( RDATss_i )
-//            ,.RD_ACK_i          ( RD_ACK_i )
+//            ,.RD_ACK_i          ( RD_ACK    )
         ) 
     ;
     

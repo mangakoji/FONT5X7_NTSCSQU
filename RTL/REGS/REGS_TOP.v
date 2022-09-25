@@ -120,7 +120,7 @@ module TB_REGS_TOP
     parameter C_C=10.0
     ,`p C_F_CK  = 50
     ,`p C_BAUD  = 10
-    ,`p C_ADR_W = 4
+    ,`p C_ADR_W = 8
     ,`p C_DAT_W = 8
 )(
 ) ;

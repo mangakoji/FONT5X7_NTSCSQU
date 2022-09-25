@@ -98,7 +98,7 @@ module UART_RX_CORE
             'h2,'h3,'h4,'h5,'h6,'h7,'h8,'h9:
               `b
                 if(CTR_is_0)
-                `b                      `sfl(BUFs , RXD_i) ;
+                `b                      BUFs <= {RXD_i,BUFs}>>1 ;
                                         CTRs <= C_BAUD_N-1;
                                         `inc( PC ) ;
                 `e
@@ -202,7 +202,7 @@ module UART_TX_CORE
               `b
                 if(CTR_is_0)
                 `b
-                                        `sfl({TXD,BUFs} ,1'b1);
+                                        {BUFs,TXD} <= {1'b1,BUFs};
                                         CTRs <= C_BAUD_N-1 ;
                                         `inc( PC ) ;
                 `e
