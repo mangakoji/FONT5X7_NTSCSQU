@@ -130,7 +130,14 @@ module CQ_MAX10_TOP
     `w LED_G_o ;
     `w LED_B_o ;
 
-    `include "./MISC/TIMESTAMP.v"
+
+
+    `w[31:0]    BUS_VERSIONs     ;
+    `w[31:0]    BUS_TIMESTAMPs   ;
+    `w[ 7:0]    BUS_R8DATs      ;
+    `w[ 7:0]    BUS_R9DATs      ;
+    `w RXD_i ;
+    `w TXD_o ;
     `w VIDEO_o ;
     `w SOUND_o ;
     `w[31:0] LEDs_ON ;
@@ -141,12 +148,40 @@ module CQ_MAX10_TOP
         (
              .CK_i              ( CK_i                  )//n x 12.27272MHz
             ,.XARST_i           ( XARST_i               )
-            ,.BUS_TIME_STAMPs_i ( C_TIMESTAMP           )
+            ,.BUS_TIMESTAMPs_i  ( BUS_TIMESTAMPs        )
+            ,.BUS_VERSIONs_i    ( BUS_VERSIONs          )
+            ,.BUS_R8DATs_i      ( BUS_R8DATs            )
+            ,.BUS_R9DATs_i      ( BUS_R9DATs            )
             ,.XPSW_i            ( ~ PSWs_i      [0]     )
             ,.VIDEO_o           ( VIDEO_o               )
             ,.SOUND_o           ( SOUND_o               )
         ) 
     ;
+    REGS_TOP
+        #(
+             .C_DAT_W   ( 8 )
+            ,.C_ADR_W   ( 8 )
+            ,.C_F_CK    ( C_F_CK        )
+            ,.C_BAUD    ( 115_200     )
+        )REGS_TOP
+        (
+             .CK_i              ( CK_i              )
+            ,.XARST_i           ( XARST_i           )
+//            ,.RST_i             ( RST_i             )
+            ,.RXD_i             ( RXD_i             )
+            ,.TXD_o             ( TXD_o             )
+            ,.BUS_R9DATs_o      ( BUS_R9DATs        )
+            ,.BUS_R8DATs_o      ( BUS_R8DATs        )
+            ,.BUS_TIMESTAMPs_o  ( BUS_TIMESTAMPs    )
+            ,.BUS_VERSIONs_o    ( BUS_VERSIONs      )
+//            ,.REGss_o           ( REGss_o  )
+//            ,.ADRs_o            ( ADRs_o   )
+//            ,.RD_REQ_o          ( RD_REQ_o )
+//            ,.RDATss_i          ( RDATss_i )
+//            ,.RD_ACK_i          ( RD_ACK_i )
+        ) 
+    ;
+    
     wire [63:0] BJO_DBGOs ;
     wire [23:0] BJ_DBGs ;
     JTAG_DBGER 
@@ -157,12 +192,15 @@ module CQ_MAX10_TOP
     ) ;
     assign BJO_DBGOs[31:0] = 
         (BJ_DBGs[22]) ?
-            C_TIMESTAMP
-        :
-            {
-                  LEDs_ON
-                , DBGOs
-            } 
+        (
+            (BJ_DBGs[21])
+            ?                           BUS_TIMESTAMPs
+            :                           BUS_VERSIONs
+        ):(
+            (BJ_DBGs[21])
+            ?                           BUS_R9DATs 
+            :                           BUS_R8DATs
+        )
     ;
 
     assign LED_R_o         = BJ_DBGs[ 23 ] ;
@@ -194,8 +232,9 @@ module CQ_MAX10_TOP
     `a P61 = 1'bz ;
     `a P60 = 1'bz ;
     `a P59 = 1'bz ;
-    `a P58 = 1'bz ;
+    `a P58 = RXD_i ;
     `a P57 = 1'bz ;
+    `a TXD_o = P57 ;
     `a P56 = 1'bz ;
     `a P55 = 1'bz ;
     `a P52 = 1'bz ;

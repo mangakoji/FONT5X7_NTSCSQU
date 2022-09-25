@@ -1,4 +1,8 @@
 //`define FPGA_COMPILE 
+`include "../../RTL/REGS/UART_CORE.v"
+`include "../../RTL/REGS/UART_RX_PARSE.v"
+`include "../../RTL/REGS/REGS.v"
+`include "../../RTL/REGS/REGS_TOP.v"
 `include "../../RTL/MAIN/NTSC_SQU_TG.v"
 `include "../../RTL/MAIN/NTSC_SQU_ENC.v"
 `include "../../RTL/MAIN/NTSC_SQU.v"

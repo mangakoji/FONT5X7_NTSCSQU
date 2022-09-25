@@ -16,7 +16,10 @@ module FONT5X7_NTSCSQU_TOP
 )(
       `in `tri1     CK_i
     , `in `tri1     XARST_i
-    ,`in`tri0[31:0] BUS_TIME_STAMPs_i
+    ,`in`tri0[ 7:0] BUS_R9DATs_i
+    ,`in`tri0[ 7:0] BUS_R8DATs_i
+    ,`in`tri0[31:0] BUS_TIMESTAMPs_i
+    ,`in`tri0[31:0] BUS_VERSIONs_i
     ,`in`tri0       XPSW_i
     ,`out`w         VIDEO_o
     ,`out`w         SOUND_o
@@ -39,14 +42,16 @@ module FONT5X7_NTSCSQU_TOP
               .CK_i             ( CK_i              )//n x 12.27272MHz
             ,.XARST_i           ( XARST_i           )
             ,.PX_CK_EE_o        ( PX_CK_EE          )
-            ,.DISP_DATss_i      ( MSEQs             )
-            ,.BUS_TIME_STAMPs_i ( BUS_TIME_STAMPs_i )
+//            ,.DISP_DATss_i      ( MSEQs             )
+            ,.DISP_DATss_i      ( {BUS_R9DATs_i,BUS_R8DATs_i}      )
+            ,.BUS_TIMESTAMPs_i  ( BUS_TIMESTAMPs_i  )
+            ,.BUS_VERSIONs_i    ( BUS_VERSIONs_i    )
             ,.DICE_LEDs_i       ( DICE_LEDs         )
             ,.XPSW_i            ( XPSW_i            )
             ,.VIDEO_o           ( VIDEO_o           )
         )
     ;
-    `r[21:0]PCTRs ;
+    `r[20:0]PCTRs ;
     `r[ 4:0]BCTRs ;
     // GP (32,22,2,1)
     `lp C_GPs = 32'h8020_0003 ;
@@ -73,10 +78,10 @@ module FONT5X7_NTSCSQU_TOP
         `e
     `e
     
-    `a DICE_LEDs = {7{BCTRs[4]}} ;
+    `a DICE_LEDs = MSEQs ; //{7{BCTRs[4]}} ;
     
     // append sounder later. maybe
-    `a SOUND_o = PCTRs[19] ;
+    `a SOUND_o = PCTRs[16] ;
     
 endmodule
     `default_nettype wire
