@@ -163,7 +163,7 @@ module UART_RX_PARSE
                 // 0-
                 `eelif(R_DET_Ds[0])
                 `b                      `inc( ADRs ) ;
-                                        REG_RD_REQ <= 1'b0 ;
+                                        REG_RD_REQ <= 1'b1 ;
                                         TX_REQ <= 1'b0 ;
                                         TX_WORD_CTRs <= 1 ;   
                                         TX_STATEs <= 3 ;   
@@ -224,7 +224,7 @@ module UART_RX_PARSE
                 if( TX_STB )            // wait TX_STB
                 `b 
                     if(TX_WORD_CTRs<1)
-                    `b                  ADRs <= HEXss[12+:4] ;
+                    `b//                   ADRs <= HEXss[12+:4] ;
                                         `sfl(TX_BUFs , 4'hF) ;
                                         `inc( TX_WORD_CTRs ) ;
                                         TX_REQ <= 1'b1 ;

@@ -173,19 +173,49 @@ module TB_REGS_TOP
 
     `lp C_TV_DATss = {
         {128{8'h00}}
-        ,8'h0C
+        ," "
+        ,8'h0D
+        ,"\n"
+        ,"R"
+        ,8'h0D
+        ,"\n"
+        ,"R"
+        ," "
+        ,8'h0D
+        ,"\n"
+        ,"R"
+        ," "
+        ,8'h0D
+        ,"\n"
+        ,"R"
+        ," "
+        ,8'h0D
+        ,"\n"
+        ,"R"
+        ,8'h0D
+        ,"\n"
+        ,"4"
+        ,"0"
+        ,"R"
+        ,8'h0D
         ,"\n"
         ,"8"
         ,"0"
         ,"R"
         ,"\n"
-        ,"A"
-        ,"4"
+        ,"B"
+        ,"B"
         ,"W"
         ,"\n"
-        ,"B"
-        ,"3"
+        ,"A"
+        ,"A"
         ,"8"
+        ,"0"
+        ,"W"
+        ,"\n"
+        ,"2"
+        ,"1"
+        ,"9"
         ,"0"
         ,"W"
         ,"\n"
@@ -254,6 +284,10 @@ module TB_REGS_TOP
         `ecase
     `e
     `w TXD_o ;
+    `w[ 7:0]    BUS_R9DATs_o        ;
+    `w[ 7:0]    BUS_R8DATs_o        ;
+    `w[31:0]    BUS_TIMESTAMPs_o    ;
+    `w[31:0]    BUS_VERSIONs_o      ;
     REGS_TOP
         #(
              .C_DAT_W   ( C_DAT_W   )
@@ -262,16 +296,20 @@ module TB_REGS_TOP
             ,.C_BAUD    ( C_BAUD    )
         )REGS_TOP
         (
-             .CK_i      ( CK_i     )
-            ,.XARST_i   ( XARST_i  )
-//            ,.RST_i     ( RST_i    )
-            ,.RXD_i     ( RXD_i    )
-            ,.TXD_o     ( TXD_o    )
-            ,.REGss_o   ( REGss_o  )
-            ,.ADRs_o    ( ADRs_o   )
-            ,.RD_REQ_o  ( RD_REQ_o )
-            ,.RDATss_i  ( RDATss_i )
-            ,.RD_ACK_i  ( RD_ACK_i )
+             .CK_i              ( CK_i     )
+            ,.XARST_i           ( XARST_i  )
+//            ,.RST_i             ( RST_i    )
+            ,.RXD_i             ( RXD_i    )
+            ,.TXD_o             ( TXD_o    )
+            ,.REGss_o           ( REGss_o  )
+            ,.ADRs_o            ( ADRs_o   )
+            ,.RD_REQ_o          ( RD_REQ_o )
+            ,.RDATss_i          ( RDATss_i )
+            ,.RD_ACK_i          ( RD_ACK_i )
+            ,.BUS_R9DATs_o      ( BUS_R9DATs_o      )
+            ,.BUS_R8DATs_o      ( BUS_R8DATs_o      )
+            ,.BUS_TIMESTAMPs_o  ( BUS_TIMESTAMPs_o  )
+            ,.BUS_VERSIONs_o    ( BUS_VERSIONs_o    )
         ) 
     ;
     // TP : test Probe
