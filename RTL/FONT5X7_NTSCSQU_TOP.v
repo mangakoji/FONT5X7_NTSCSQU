@@ -5,7 +5,7 @@
 //
 
 `ifndef FPGA_COMPILE
-    `include "MAIN/FONT5X7_NTSCSQU.v"
+    `include "NTSCSQU/NTSCSQU_TOP.v"
 `endif
 `ifndef FONT5X7_NTSCSQU_TOP
     `default_nettype none
@@ -34,10 +34,10 @@ module FONT5X7_NTSCSQU_TOP
     `w  PX_CK_EE ;
     `r[32:0] MSEQs ;
     `w[ 6:0] DICE_LEDs ;
-    FONT5X7_NTSCSQU
+    NTSCSQU_TOP
         #(
              .C_F_CK     ( C_F_CK )
-        )FONT5X7_NTSCSQU
+        ) NTSCSQU_TOP
         (
               .CK_i             ( CK_i              )//n x 12.27272MHz
             ,.XARST_i           ( XARST_i           )

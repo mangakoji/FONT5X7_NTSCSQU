@@ -1,4 +1,4 @@
-// FONT5X7_NTSCSQU.v
+// NTSCSQU_TOP.v
 //
 //
 //
@@ -9,10 +9,10 @@
     `include "./RADIAL_CHART.v"
     `include "./FONT5X7.v"
 `endif
-`ifndef FONT5X7_NTSCSQU
+`ifndef NTSCSQU_TOP
     `include "../MISC/define.vh"
     `default_nettype none
-module FONT5X7_NTSCSQU
+module NTSCSQU_TOP
 #(    
       `p C_F_CK = 135_000_000
 )(    
@@ -131,16 +131,16 @@ module FONT5X7_NTSCSQU
     `e
 endmodule
     `default_nettype none
-    `define FONT5X7_NTSCSQU
+    `define NTSCSQU_TOP
 `endif
 
 
 `ifndef FPGA_COMPILE
-    `ifndef TB_FONT5X7_NTSCSQU
+    `ifndef TB_NTSCSQU_TOP
         `include "../MISC/define.vh"
         `default_nettype none
         `timescale 1ns/1ns
-module TB_FONT5X7_NTSCSQU
+module TB_NTSCSQU_TOP
 #(
     `p C_C=10.0
 )(
@@ -167,10 +167,10 @@ module TB_FONT5X7_NTSCSQU
     `r      XPSW_i      ;
     `w[17:0]LEDs_ON_o   ;
     `w      SOUND_o     ;
-    FONT5X7_NTSCSQU
+    NTSCSQU_TOP
         #(
              .C_DBG_ACC ( ~0        )
-        )FONT5X7_NTSCSQU
+        )NTSCSQU_TOP
         (
               .CK_i     ( CK_i      )      //8*12.27272MHz
             , .XARST_i  ( XARST_i   )
@@ -202,6 +202,6 @@ module TB_FONT5X7_NTSCSQU
     `e
 `emodule
         `default_nettype none
-        `define TB_FONT5X7_NTSCSQU
+        `define TB_NTSCSQU_TOP
     `endif
 `endif
