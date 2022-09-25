@@ -232,9 +232,9 @@ module CQ_MAX10_TOP
     `a P61 = 1'bz ;
     `a P60 = 1'bz ;
     `a P59 = 1'bz ;
-    `a P58 = RXD_i ;
-    `a P57 = 1'bz ;
-    `a TXD_o = P57 ;
+    `a P58 = 1'bz ;
+    `a RXD_i = P58 ;
+    `a P57 = TXD_o ;
     `a P56 = 1'bz ;
     `a P55 = 1'bz ;
     `a P52 = 1'bz ;
