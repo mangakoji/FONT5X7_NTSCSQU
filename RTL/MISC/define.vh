@@ -60,7 +60,7 @@
 `define all1(x)     (&x)
 `define incc(x)     x<=((&x)?(x):((x)+1))
 //`define incc(x,N) x<=((N)==0)?(`all1(x)?~0:((x)+1)):(`cy((x),((N)-1))?((N)-1):((x)+1))
-`define decc(x)     x<=((&x)?0:((x)-1))
+`define decc(x)     x<=((`is0(x))?0:((x)-1))
 `define cinc(x,N)   x<=(`cy((x),((N)-1))?0:((x)+1))
 `define cdec(x,N)   x<=(`is0((x))?((N)-1):((x)-1))
 `define sign(x)     (`Ds(x)<0)
