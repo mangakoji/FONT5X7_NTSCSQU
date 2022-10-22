@@ -1,8 +1,8 @@
-`ifndef S5851_I2C_MSTR
+`ifndef S5851A_I2C_MSTR
     `include ".I2C_MSTR_CORE"
     `include "../MISC/define.vh"
     `default_nettype none
-module S5851_I2C_MSTR
+module S5851A_I2C_MSTR
 #(
      `p C_F_CK = 135_000_000
     ,`p C_BPS =   10_000_000
@@ -135,7 +135,7 @@ module S5851_I2C_MSTR
     `a RX_DATs_o = RX_DATs ;
     `a DONE_o = DONE ;
 `emodule
-    `define S5851_I2C_MSTR
+    `define S5851A_I2C_MSTR
 `endif
 
 `timescale 1ns/1ns
